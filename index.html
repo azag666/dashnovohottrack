@@ -375,10 +375,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .sm-input-wrap label { font-size: .7rem; font-weight: 600; color: var(--tx3); text-transform: uppercase; letter-spacing: .5px; }
 .sm-input { width: 100%; background: var(--bg-c); border: 1px solid var(--bdr); border-radius: 8px; padding: .75rem; color: var(--tx1); font-size: .85rem; font-family: 'Inter', sans-serif; transition: all .15s; outline: none; }
 .sm-input:focus { border-color: var(--ac); box-shadow: 0 0 0 3px var(--ac-dim); }
-.sm-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
-.sm-data-card { background: var(--bg-c); border: 1px solid var(--bdr); padding: 1.1rem; border-radius: 10px; display: flex; flex-direction: column; gap: .4rem; }
-.sm-lbl { font-size: .65rem; color: var(--tx3); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
-.sm-val { font-size: 1.15rem; font-weight: 800; color: var(--tx1); }
 
 .mockup-tag{position:fixed;bottom:.875rem;right:.875rem;background:linear-gradient(135deg,#0ea5e9,#7c3aed);color:#fff;font-size:.65rem;font-weight:700;padding:4px 10px;border-radius:20px;z-index:200;letter-spacing:.5px;box-shadow:0 4px 12px rgba(14,165,233,.4)}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
@@ -668,7 +664,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 </div>
 
 <div class="modal-bg" id="settings-modal">
-  <div class="modal-box" style="max-width:540px">
+  <div class="modal-box" style="max-width:480px">
     <div class="cm-head">
       <span class="cm-title">Configurações da Conta</span>
       <div class="cm-close" onclick="closeSettingsModal()">
@@ -692,23 +688,12 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
       </div>
       
       <div class="sm-section">
-        <div class="sm-sec-title">Dados da Conta & Plano</div>
-        <div class="sm-grid">
-          <div class="sm-data-card">
-            <span class="sm-lbl">Plano Atual</span>
-            <span class="sm-val" style="color:var(--ac)">Plano Pro</span>
-          </div>
-          <div class="sm-data-card">
-            <span class="sm-lbl">Taxa HotTrack</span>
-            <span class="sm-val" style="color:var(--warn)">2.99%</span>
-          </div>
-          <div class="sm-data-card">
-            <span class="sm-lbl">Saques Mensais</span>
-            <span class="sm-val">Ilimitados</span>
-          </div>
-          <div class="sm-data-card">
-            <span class="sm-lbl">Membros Ativos</span>
-            <span class="sm-val">4 Parceiros</span>
+        <div class="sm-sec-title">Taxas do Sistema</div>
+        <div class="sm-input-wrap">
+          <label>Comissão HotTrack (Por Venda Aprovada)</label>
+          <div class="sm-input" style="background:var(--bg-s); color:var(--tx3); font-weight:600; cursor:not-allowed; user-select:none; display:flex; justify-content:space-between; align-items:center;" title="A taxa padrão não pode ser editada">
+            <span>Taxa Padrão</span>
+            <span style="color:var(--warn); font-size:1.05rem; font-weight:800;">2.99%</span>
           </div>
         </div>
       </div>
@@ -1493,7 +1478,7 @@ function renderDevices() {
 }
 
 /* ============================================================
-   CUSTOMIZE PANEL
+   CUSTOMIZE PANEL E CITY MODAL
 ============================================================ */
 function toggleCustomize() {
   const overlay = document.getElementById('cp-overlay');
@@ -1546,6 +1531,24 @@ function moveMetric(id, dir) {
   [state.enabledMetrics[i], state.enabledMetrics[ni]] = [state.enabledMetrics[ni], state.enabledMetrics[i]];
   renderMetrics();
   renderCustomizeList();
+}
+
+function closeCityModal() { document.getElementById('city-modal').classList.remove('open'); }
+function openCityModal(uf) {
+  const cities = CITIES_DATA[uf] || CITIES_DATA.default;
+  const maxSales = cities[0].sales;
+  document.getElementById('city-modal-title').innerHTML = `Cidades · <span style="color:var(--ac)">${uf}</span>`;
+  document.getElementById('city-modal-list').innerHTML = cities.map((c, i) => `
+    <div class="cm-city">
+      <div class="cm-rank">${i+1}</div>
+      <div class="cm-info">
+        <div class="cm-cname">${c.name}</div>
+        <div class="cm-cbar-wrap"><div class="cm-cbar" style="width:${Math.round(c.sales/maxSales*100)}%"></div></div>
+      </div>
+      <div class="cm-cval">R$ ${c.rev.toLocaleString('pt-BR')}</div>
+    </div>
+  `).join('');
+  document.getElementById('city-modal').classList.add('open');
 }
 
 /* ============================================================
