@@ -378,11 +378,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .fm-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem; }
 .fm-full { grid-column:1 / -1; margin-bottom:1rem; }
 
-/* MULTI PIXEL PILLS */
-.pixel-pill { display:inline-flex; align-items:center; gap:6px; background:var(--bg-ch); border:1px solid var(--bdr); padding:4px 8px; border-radius:6px; font-size:.7rem; font-weight:600; color:var(--tx1); }
-.pixel-pill i { cursor:pointer; color:var(--err); transition:color .15s; }
-.pixel-pill i:hover { color:#fff; }
-
 .pr-bot-group { margin-bottom: 1.5rem; }
 .pr-bot-header { display:flex; align-items:center; gap:.6rem; padding:.5rem .75rem; background:var(--bg-ch); border-radius:8px; font-size:.8rem; font-weight:700; color:var(--tx1); margin-bottom:.75rem; }
 .pr-bot-av { width:24px; height:24px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:.65rem; color:#fff; }
@@ -658,8 +653,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
         </div>
       </div>
       <div class="chart-body">
-        <div class="positioning-grid">
-          </div>
+        <div class="positioning-grid"></div>
       </div>
     </div>
 
@@ -671,8 +665,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
         </div>
       </div>
       <div class="chart-body">
-        <div class="devices-grid">
-          </div>
+        <div class="devices-grid"></div>
       </div>
     </div>
     <div style="height:1.5rem"></div>
@@ -690,23 +683,23 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
     <div class="pressel-grid fade-up">
       
       <div class="chart-card" style="margin-bottom:0">
-        <div class="chart-hd"><div class="ch-title" id="form-title">Criar Nova Pressel</div></div>
+        <div class="chart-hd"><div class="ch-title">Criar Nova Pressel</div></div>
         <div class="chart-body" style="height:auto; padding:1.5rem">
           
           <div class="fm-full">
             <label class="fm-label">Nome da Pressel</label>
-            <input type="text" id="pressel-name" class="fm-input" placeholder="Ex: VSL Emagrecimento - Oferta 01">
+            <input type="text" class="fm-input" placeholder="Ex: VSL Emagrecimento - Oferta 01">
           </div>
           
           <div class="fm-full">
             <label class="fm-label">White Page (Link Seguro)</label>
-            <input type="url" id="pressel-whitepage" class="fm-input" placeholder="https://seudominio.com/artigo-seguro">
+            <input type="url" class="fm-input" placeholder="https://seudominio.com/artigo-seguro">
           </div>
 
           <div class="fm-row">
             <div class="fm-group">
               <label class="fm-label">Dispositivos Aceitos</label>
-              <select id="pressel-devices" class="fm-select">
+              <select class="fm-select">
                 <option>Mobile e Desktop</option>
                 <option>Apenas Mobile</option>
                 <option>Apenas Desktop</option>
@@ -714,7 +707,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
             </div>
             <div class="fm-group">
               <label class="fm-label">Integração UTMify</label>
-              <select id="pressel-utmify" class="fm-select">
+              <select class="fm-select">
                 <option>Selecione a integração...</option>
                 <option>Token Principal - UTMify</option>
                 <option>Token Secundário</option>
@@ -724,8 +717,16 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 
           <div class="fm-row">
             <div class="fm-group">
+              <label class="fm-label">Pixel de Rastreamento</label>
+              <select class="fm-select">
+                <option>Selecione o Pixel...</option>
+                <option>Pixel Vendas (ID: 10293847)</option>
+                <option>Pixel Backup (ID: 99887766)</option>
+              </select>
+            </div>
+            <div class="fm-group">
               <label class="fm-label">Bot de Destino (Lead)</label>
-              <select id="pressel-bot" class="fm-select">
+              <select class="fm-select">
                 <option>Selecione o Bot...</option>
                 <option value="fitturbo">FitTurbo</option>
                 <option value="nutrirobot">NutriRobot</option>
@@ -734,50 +735,26 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
             </div>
           </div>
 
-          <div class="fm-full">
-            <label class="fm-label">Pixels de Rastreamento</label>
-            <div style="display:flex; gap:8px;">
-              <select id="pixel-select" class="fm-select">
-                <option value="">Selecione um pixel salvo...</option>
-                <option value="10293847">Pixel Principal FB (10293847)</option>
-                <option value="99887766">Pixel Tiktok (99887766)</option>
-                <option value="11223344">Pixel Secundário FB (11223344)</option>
-                <option value="55667788">Google Ads Tag (55667788)</option>
-              </select>
-              <button class="btn btn-gh" onclick="addPixelFromSelect()" type="button" style="white-space:nowrap">Adicionar</button>
+          <div class="fm-full" style="display:flex; align-items:center; justify-content:space-between; padding:1rem; background:var(--bg-s); border:1px solid var(--bdr); border-radius:8px;">
+            <div>
+              <div style="font-size:.85rem; font-weight:600; color:var(--tx1)">Deploy Automático Netlify</div>
+              <div style="font-size:.7rem; color:var(--tx3); margin-top:2px">Gera um link pronto para uso na estrutura da Netlify.</div>
             </div>
-            <div id="pixel-pills-container" style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;">
-              </div>
+            <label class="tog">
+              <input type="checkbox" checked>
+              <span class="tog-sl"></span>
+            </label>
           </div>
 
-          <div class="fm-full" style="display:flex; flex-direction:column; gap:1rem; padding:1rem; background:var(--bg-s); border:1px solid var(--bdr); border-radius:8px;">
-            <div style="display:flex; align-items:center; justify-content:space-between;">
-              <div>
-                <div style="font-size:.85rem; font-weight:600; color:var(--tx1)">Deploy Automático Netlify</div>
-                <div style="font-size:.7rem; color:var(--tx3); margin-top:2px">Gera um link pronto para uso na estrutura da Netlify.</div>
-              </div>
-              <label class="tog">
-                <input type="checkbox" id="netlify-toggle" checked onchange="toggleNetlifyField(this)">
-                <span class="tog-sl"></span>
-              </label>
-            </div>
-            <div id="netlify-domain-group" style="display:block; border-top:1px solid var(--bdr); padding-top:1rem;">
-              <label class="fm-label">Domínio Netlify Personalizado</label>
-              <input type="text" class="fm-input" id="netlify-domain-input" placeholder="ex: meudominio123.netlify.app">
-            </div>
-          </div>
-
-          <div id="form-actions" style="display:flex; gap:1rem; margin-top:1.5rem">
-            <button class="btn btn-pr" style="width:100%; justify-content:center; padding:.75rem; font-size:.85rem;" onclick="savePressel()">
-              <i class="fas fa-plus"></i> Criar Pressel
-            </button>
-          </div>
+          <button class="btn btn-pr" style="width:100%; justify-content:center; padding:.75rem; font-size:.85rem;" onclick="showToast('Pressel criada com sucesso!')">
+            <i class="fas fa-plus"></i> Criar Pressel
+          </button>
         </div>
       </div>
 
       <div class="chart-card" style="margin-bottom:0">
         <div class="chart-hd"><div class="ch-title">Pressels Criadas</div></div>
-        <div class="chart-body" style="height:auto; padding:1.25rem; max-height:850px; overflow-y:auto;" id="pressels-list-container">
+        <div class="chart-body" style="height:auto; padding:1.25rem; max-height:600px; overflow-y:auto;" id="pressels-list-container">
           </div>
       </div>
 
@@ -900,30 +877,11 @@ const BOTS = [
 ];
 
 const PRESSELS_MOCK = [
-  { 
-    id: 1, name: 'VSL Principal - Emagrecimento', whitepage: 'https://site.com/artigo', devices: 'Mobile e Desktop', 
-    utmify: 'Token Principal - UTMify', bot: 'fitturbo', netlify: true, netlifyDomain: 'ft-vsl-01.netlify.app', link: 'https://ft-vsl-01.netlify.app', 
-    pixels: [{id: '10293847', text: 'Pixel Principal FB (10293847)'}, {id: '99887766', text: 'Pixel Tiktok (99887766)'}] 
-  },
-  { 
-    id: 2, name: 'Quiz + Advertorial', whitepage: 'https://site.com/quiz', devices: 'Apenas Mobile', 
-    utmify: 'Token Secundário', bot: 'fitturbo', netlify: false, netlifyDomain: '', link: '', 
-    pixels: [{id: '11223344', text: 'Pixel Secundário FB (11223344)'}] 
-  },
-  { 
-    id: 3, name: 'Receitas Detox VIP', whitepage: 'https://site.com/receitas', devices: 'Mobile e Desktop', 
-    utmify: 'Token Principal - UTMify', bot: 'nutrirobot', netlify: true, netlifyDomain: 'nr-detox.netlify.app', link: 'https://nr-detox.netlify.app', 
-    pixels: [{id: '10293847', text: 'Pixel Principal FB (10293847)'}] 
-  },
-  { 
-    id: 4, name: 'Oferta Relâmpago 30%', whitepage: 'https://site.com/oferta', devices: 'Apenas Desktop', 
-    utmify: 'Token Principal - UTMify', bot: 'salesplus', netlify: true, netlifyDomain: 'sp-oferta30.netlify.app', link: 'https://sp-oferta30.netlify.app', 
-    pixels: [{id: '55667788', text: 'Google Ads Tag (55667788)'}] 
-  },
+  { id: 1, name: 'VSL Principal - Emagrecimento', devices: 'Ambos', bot: 'fitturbo', netlify: true, link: 'https://ft-vsl-01.netlify.app' },
+  { id: 2, name: 'Quiz + Advertorial', devices: 'Mobile', bot: 'fitturbo', netlify: false, link: '' },
+  { id: 3, name: 'Receitas Detox VIP', devices: 'Ambos', bot: 'nutrirobot', netlify: true, link: 'https://nr-detox.netlify.app' },
+  { id: 4, name: 'Oferta Relâmpago 30%', devices: 'Desktop', bot: 'salesplus', netlify: true, link: 'https://sp-oferta30.netlify.app' },
 ];
-
-let currentPixels = [];
-let editingPresselId = null;
 
 function renderPresselsList() {
   const container = document.getElementById('pressels-list-container');
@@ -933,10 +891,12 @@ function renderPresselsList() {
   container.innerHTML = '';
   if(selectDomain) selectDomain.innerHTML = '<option>Selecione uma Pressel...</option>';
 
+  // Agrupar por Bot
   BOTS.forEach(bot => {
     const presselsForBot = PRESSELS_MOCK.filter(p => p.bot === bot.id);
     if(presselsForBot.length === 0) return;
 
+    // Header do Bot
     const group = document.createElement('div');
     group.className = 'pr-bot-group';
     group.innerHTML = `
@@ -950,7 +910,9 @@ function renderPresselsList() {
 
     const itemsContainer = group.querySelector(`#pr-cont-${bot.id}`);
 
+    // Itens
     presselsForBot.forEach(pr => {
+      // Preencher select do modal de domínios
       if(selectDomain) selectDomain.innerHTML += `<option value="${pr.id}">${pr.name} (${bot.name})</option>`;
 
       const item = document.createElement('div');
@@ -966,124 +928,20 @@ function renderPresselsList() {
         <div class="pr-info">
           <div class="pr-name">${pr.name}</div>
           <div class="pr-meta">
-            <span style="display:flex;align-items:center;gap:4px"><i class="fas fa-${pr.devices === 'Apenas Mobile' ? 'mobile-alt' : (pr.devices === 'Apenas Desktop' ? 'desktop' : 'laptop')}"></i> ${pr.devices}</span>
+            <span style="display:flex;align-items:center;gap:4px"><i class="fas fa-${pr.devices === 'Mobile' ? 'mobile-alt' : (pr.devices === 'Desktop' ? 'desktop' : 'laptop')}"></i> ${pr.devices}</span>
             <span class="pr-badge ${badgeClass}">${badgeText}</span>
           </div>
         </div>
         <div class="pr-actions">
           <div class="pr-btn" title="Copiar HTML" onclick="copyToClipboard('<html></html>', 'Código HTML copiado com sucesso!')"><i class="fas fa-code"></i></div>
           ${linkBtn}
-          <div class="pr-btn" title="Editar" onclick="editPressel(${pr.id})"><i class="fas fa-pen"></i></div>
-          <div class="pr-btn del" title="Excluir" onclick="deletePressel(${pr.id})"><i class="fas fa-trash"></i></div>
+          <div class="pr-btn" title="Editar"><i class="fas fa-pen"></i></div>
+          <div class="pr-btn del" title="Excluir"><i class="fas fa-trash"></i></div>
         </div>
       `;
       itemsContainer.appendChild(item);
     });
   });
-}
-
-function addPixelFromSelect() {
-  const select = document.getElementById('pixel-select');
-  const val = select.value;
-  const text = select.options[select.selectedIndex]?.text;
-  
-  if(val && !currentPixels.find(p => p.id === val)) {
-    currentPixels.push({id: val, text: text});
-    renderPixelPills();
-    select.value = '';
-  }
-}
-
-function removePixel(id) {
-  currentPixels = currentPixels.filter(p => p.id !== id);
-  renderPixelPills();
-}
-
-function renderPixelPills() {
-  const container = document.getElementById('pixel-pills-container');
-  container.innerHTML = currentPixels.map(p => `
-    <div class="pixel-pill">
-      ${p.text} <i class="fas fa-times" onclick="removePixel('${p.id}')"></i>
-    </div>
-  `).join('');
-}
-
-function toggleNetlifyField(cb) {
-  const group = document.getElementById('netlify-domain-group');
-  group.style.display = cb.checked ? 'block' : 'none';
-}
-
-function editPressel(id) {
-  const pr = PRESSELS_MOCK.find(p => p.id === id);
-  if(!pr) return;
-  
-  editingPresselId = id;
-  document.getElementById('form-title').textContent = `Editar Pressel`;
-  
-  document.getElementById('pressel-name').value = pr.name;
-  document.getElementById('pressel-whitepage').value = pr.whitepage || '';
-  document.getElementById('pressel-devices').value = pr.devices || 'Mobile e Desktop';
-  document.getElementById('pressel-utmify').value = pr.utmify || 'Token Principal - UTMify';
-  document.getElementById('pressel-bot').value = pr.bot || 'fitturbo';
-  
-  currentPixels = [...(pr.pixels || [])];
-  renderPixelPills();
-  
-  const netToggle = document.getElementById('netlify-toggle');
-  netToggle.checked = pr.netlify;
-  toggleNetlifyField(netToggle);
-  document.getElementById('netlify-domain-input').value = pr.netlifyDomain || '';
-  
-  const btnGroup = document.getElementById('form-actions');
-  btnGroup.innerHTML = `
-    <button class="btn btn-pr" style="flex:1; justify-content:center; padding:.75rem; font-size:.85rem;" onclick="savePressel()">
-      <i class="fas fa-save"></i> Salvar Alterações
-    </button>
-    <button class="btn btn-gh" style="justify-content:center; padding:.75rem; font-size:.85rem;" onclick="cancelEdit()">
-      Cancelar
-    </button>
-  `;
-  
-  document.querySelector('.pressel-grid').scrollIntoView({behavior: 'smooth'});
-}
-
-function cancelEdit() {
-  editingPresselId = null;
-  document.getElementById('form-title').textContent = 'Criar Nova Pressel';
-  document.getElementById('pressel-name').value = '';
-  document.getElementById('pressel-whitepage').value = '';
-  document.getElementById('pressel-devices').selectedIndex = 0;
-  document.getElementById('pressel-utmify').selectedIndex = 0;
-  document.getElementById('pressel-bot').selectedIndex = 0;
-  
-  currentPixels = [];
-  renderPixelPills();
-  
-  const netToggle = document.getElementById('netlify-toggle');
-  netToggle.checked = true;
-  toggleNetlifyField(netToggle);
-  document.getElementById('netlify-domain-input').value = '';
-  
-  const btnGroup = document.getElementById('form-actions');
-  btnGroup.innerHTML = `
-    <button class="btn btn-pr" style="width:100%; justify-content:center; padding:.75rem; font-size:.85rem;" onclick="savePressel()">
-      <i class="fas fa-plus"></i> Criar Pressel
-    </button>
-  `;
-}
-
-function savePressel() {
-  if(editingPresselId) {
-    showToast('Alterações salvas com sucesso!');
-    cancelEdit();
-  } else {
-    showToast('Nova Pressel criada com sucesso!');
-    cancelEdit();
-  }
-}
-
-function deletePressel(id) {
-  showToast('Pressel excluída com sucesso!');
 }
 
 /* ============================================================
@@ -1117,3 +975,219 @@ function copyToClipboard(text, successMsg) {
     console.error('Erro ao copiar', err);
   });
 }
+
+/* ============================================================
+   OUTROS MOCKS (Dashboard)
+============================================================ */
+const MOCK_METRICS = {
+  all: {
+    clicks:24831, starts:18000, pixGen:4050, pixPaid:3247, revTotal:89430, revPaid:79230, convFunnel:15.6, convPix:80.2, blocked:423,
+    trend:{ clicks:18, starts:12, pixGen:7, pixPaid:11, revTotal:24, revPaid:22, convFunnel:3, convPix:1, blocked:-8 }
+  },
+  fitturbo: {
+    clicks:8420, starts:6200, pixGen:1450, pixPaid:1234, revTotal:32100, revPaid:28900, convFunnel:14.7, convPix:85.1, blocked:120,
+    trend:{ clicks:21, starts:15, pixGen:9, pixPaid:13, revTotal:28, revPaid:25, convFunnel:2, convPix:3, blocked:-5 }
+  }
+};
+const CHART_DATA = { '30d': { labels:['1','2','3','4','5'], all:[2100,3200,2800,4500,3900], fitturbo:[900,1400,1100,1900,1600] } };
+const STATE_DATA = { SP:{sales:1234,revenue:32100,clicks:8204,name:'São Paulo'} };
+const CITIES_DATA = { SP:[{name:'São Paulo',sales:623,rev:16200}], default:[{name:'Capital',sales:180,rev:4500}] };
+
+const DYNAMIC_DATA = {
+  all: {
+    today: {
+      positioning: [{ name: 'Facebook Stories', sales: 342, revenue: 142350 }],
+      devices: [{ name: 'Mobile', sales: 12432, revenue: 892160 }, { name: 'Desktop', sales: 5821, revenue: 423605 }],
+      campaigns: [{ name: 'Black Friday Hoje', revenue: 84750 }]
+    },
+    '7d': {
+      positioning: [{ name: 'Facebook Stories', sales: 2847, revenue: 992450 }],
+      devices: [{ name: 'Mobile', sales: 18432, revenue: 8921600 }, { name: 'Desktop', sales: 8721, revenue: 4236050 }],
+      campaigns: [{ name: 'Black Friday 2024', revenue: 284750 }]
+    }
+  }
+};
+
+const ALL_METRICS = [
+  { id:'clicks', label:'Cliques na Página', color:'ac', icon:'eye', type:'number', desc:'' },
+  { id:'starts', label:'Starts nos Bots', color:'pur', icon:'bot', type:'number', desc:'' },
+  { id:'pixGen', label:'PIX Gerados', color:'warn', icon:'pix', type:'number', desc:'' },
+  { id:'revPaid', label:'Faturamento Pago', color:'ok', icon:'wallet', type:'currency', desc:'' },
+  { id:'convFunnel', label:'Conversão do Funil', color:'warn', icon:'funnel', type:'percent', desc:'' },
+  { id:'convPix', label:'Conversão do PIX', color:'ok', icon:'pix-conv', type:'percent', desc:'' }
+];
+
+const ICONS = {
+  eye:`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>`,
+  bot:`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>`,
+  pix:`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8H3a2 2 0 00-2 2v6a2 2 0 002 2h2"/></svg>`,
+  wallet:`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>`,
+  funnel:`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>`,
+  'pix-conv':`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>`
+};
+
+const state = {
+  gf: { date:'7d', bot:'all' },
+  visual: { period:'day' },
+  enabledMetrics: ['clicks','starts','pixGen','revPaid','convFunnel','convPix'],
+  charts: {},
+  sparklineData: { clicks:[3100,2800], starts:[2200,1900], pixGen:[520,480], revPaid:[6100,9800], convFunnel:[14.2,13.8], convPix:[79.0,79.2] }
+};
+
+function toggleTheme() {
+  const html = document.documentElement;
+  const currentTheme = html.getAttribute('data-theme');
+  const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+  html.setAttribute('data-theme', newTheme);
+  document.getElementById('theme-icon').className = newTheme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
+  localStorage.setItem('theme', newTheme);
+  updateRevenueChart();
+  updateVisualChart();
+}
+const savedTheme = localStorage.getItem('theme') || 'dark';
+document.documentElement.setAttribute('data-theme', savedTheme);
+document.getElementById('theme-icon').className = savedTheme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
+
+const fmt = (v, type) => {
+  if (type === 'currency') return 'R$ ' + (v >= 1000 ? (v/1000).toFixed(1)+'k' : v.toLocaleString('pt-BR'));
+  if (type === 'percent') return v.toFixed(1) + '%';
+  return v >= 1000 ? (v/1000).toFixed(1)+'k' : v.toLocaleString('pt-BR');
+};
+const colorVar = { ac:'var(--ac)', ok:'var(--ok)', warn:'var(--warn)', pur:'var(--pur)', err:'var(--err)' };
+
+/* NAVEGAÇÃO ENTRE PÁGINAS (ALTERADO PARA SUPORTAR MULTIPLAS TELAS) */
+function nav(page) {
+  document.querySelectorAll('.ni').forEach(el => el.classList.toggle('active', el.dataset.page === page));
+  
+  // Esconde todas as páginas
+  document.querySelectorAll('.pg-view').forEach(el => el.style.display = 'none');
+  
+  // Mostra a selecionada
+  const targetPage = document.getElementById('page-' + page);
+  if (targetPage) {
+    targetPage.style.display = '';
+  } else {
+    document.getElementById('page-placeholder').style.display = '';
+    const PAGE_LABELS = {hotbot:'HotBot', pressels:'Pressel Pages', checkouts:'Checkouts', transactions:'Transações', pixels:'Pixels', pixelWarming:'Pixel Warming', settings:'API PIX', integrations:'Integrações'};
+    document.getElementById('ph-title').textContent = PAGE_LABELS[page] || page;
+  }
+
+  // Atualiza o Breadcrumb no Dashboard (apenas se estiver lá)
+  const bcCur = document.getElementById('bc-cur');
+  if (bcCur) {
+    const PAGE_LABELS = {dashboard:'Dashboard', pressels:'Pressel Pages'};
+    bcCur.textContent = PAGE_LABELS[page] || page;
+  }
+}
+
+function openSettingsModal() { document.getElementById('settings-modal').classList.add('open'); }
+function closeSettingsModal() { document.getElementById('settings-modal').classList.remove('open'); }
+function openDomainModal() { document.getElementById('domain-modal').classList.add('open'); }
+function closeDomainModal() { document.getElementById('domain-modal').classList.remove('open'); }
+function closeCityModal() { document.getElementById('city-modal').classList.remove('open'); }
+
+function renderTopBar() {
+  const hour = new Date().getHours();
+  let greeting = 'Boa noite';
+  if (hour >= 5 && hour < 12) greeting = 'Bom dia';
+  else if (hour >= 12 && hour < 18) greeting = 'Boa tarde';
+  document.getElementById('greeting-text').textContent = `${greeting}, Rubens Neto 👋`;
+  
+  let val = 1248430.50; 
+  const bot = state.gf.bot;
+  if(bot === 'fitturbo') val *= 0.8;
+  if(bot === 'nutrirobot') val *= 0.7;
+  if(bot === 'salesplus') val *= 0.6;
+  if(bot === 'prowarm') val *= 0.4;
+  document.getElementById('top-revenue-val').textContent = 'R$ ' + val.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+  
+  const tiers = [0, 10000, 50000, 100000, 250000, 500000, 1000000];
+  let percent = 0, activeIndex = 0;
+  for(let i=0; i<tiers.length; i++) { if(val >= tiers[i]) activeIndex = i; }
+  if (activeIndex >= tiers.length - 1) percent = 100;
+  else {
+     const base = tiers[activeIndex], next = tiers[activeIndex + 1];
+     const segmentSize = 100 / (tiers.length - 1), fraction = (val - base) / (next - base);
+     percent = (activeIndex * segmentSize) + (fraction * segmentSize);
+  }
+  document.getElementById('goal-fill').style.width = percent + '%';
+  const points = document.querySelectorAll('.gp');
+  points.forEach((p, idx) => {
+     p.classList.remove('active', 'current');
+     if(val >= tiers[idx]) p.classList.add('active');
+     if (idx === activeIndex) p.classList.add('current');
+  });
+}
+
+function setGF(type, val, el) {
+  state.gf.date = val;
+  document.querySelectorAll('.gf-bar > .dp-pills > .dp').forEach(d => d.classList.remove('active'));
+  el.classList.add('active');
+  renderTopBar(); renderMetrics(); updateRevenueChart(); updateVisualChart(); renderBotCards(); renderTopStates(); renderPositioning(); renderDevices();
+}
+
+function toggleBotDrop(id) {
+  const menu = document.getElementById(id.replace('drop','menu'));
+  const btn = document.getElementById(id.replace('drop','btn'));
+  menu.classList.toggle('open'); btn.classList.toggle('open');
+}
+
+function selectBot(val, scope) {
+  const menu = document.getElementById(scope + '-bot-menu');
+  const label = document.getElementById(scope + '-bot-label');
+  const btn = document.getElementById(scope + '-bot-btn');
+  menu.querySelectorAll('.bot-drop-item').forEach(i => {
+    if (i.dataset.bot === val) { i.style.background = 'var(--ac-dim)'; i.style.color = 'var(--ac)'; }
+    else { i.style.background = ''; i.style.color = ''; }
+  });
+  const botNames = { all:'Todos os bots', fitturbo:'FitTurbo', nutrirobot:'NutriRobot', salesplus:'SalesPlus', prowarm:'ProWarm' };
+  state.gf.bot = val;
+  label.textContent = botNames[val];
+  renderTopBar(); renderMetrics(); updateRevenueChart(); updateVisualChart(); renderBotCards(); renderTopStates(); renderPositioning(); renderDevices();
+  menu.classList.remove('open'); btn.classList.remove('open');
+}
+
+function renderMetrics() {
+  const grid = document.getElementById('metrics-grid');
+  const bot = state.gf.bot; const date = state.gf.date;
+  const data = MOCK_METRICS[bot] || MOCK_METRICS.all;
+  const dateMultiplier = (date === 'today' || date === 'yesterday') ? 0.3 : (date === '7d' ? 0.8 : (date === 'total' ? 3 : 1));
+  const botMultiplier = bot === 'all' ? 1 : (bot === 'fitturbo' ? 0.8 : 0.6);
+  const totalMultiplier = dateMultiplier * botMultiplier;
+  
+  if(!grid) return;
+  grid.innerHTML = '';
+  state.enabledMetrics.forEach(id => {
+    const m = ALL_METRICS.find(x => x.id === id); if (!m) return;
+    const val = Math.round((data[id] !== undefined ? data[id] : 0) * totalMultiplier);
+    const tr = Math.round(((data.trend && data.trend[id]) || 0) * totalMultiplier);
+    const trUp = tr >= 0; const col = m.color;
+    const div = document.createElement('div'); div.className = `mc c-${col}`;
+    div.innerHTML = `<div class="mc-head"><div class="mc-ico c-${col}">${ICONS[m.icon]}</div><div class="mc-trend ${trUp?'up':'down'}">${Math.abs(tr)}%</div></div><div class="mc-val c-${col}">${fmt(val, m.type)}</div><div class="mc-lbl">${m.label}</div>`;
+    grid.appendChild(div);
+  });
+}
+
+function updateRevenueChart() { /* Mockup visual genérico */ }
+function updateVisualChart() { /* Mockup visual genérico */ }
+function renderBotCards() { /* Mockup visual genérico */ }
+function renderTopStates() { /* Mockup visual genérico */ }
+function renderPositioning() { /* Mockup visual genérico */ }
+function renderDevices() { /* Mockup visual genérico */ }
+function toggleCustomize() {}
+
+window.addEventListener('load', () => {
+  renderTopBar();
+  renderMetrics();
+  renderPresselsList(); // Inicializa a lista de Pressels
+});
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.bot-drop')) {
+    document.querySelectorAll('.bot-drop-menu').forEach(m => m.classList.remove('open'));
+    document.querySelectorAll('.bot-drop-btn').forEach(b => b.classList.remove('open'));
+  }
+});
+</script>
+</body>
+</html>
