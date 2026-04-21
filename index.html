@@ -104,13 +104,25 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
    MAIN CONTENT
 ============================================================ */
 #main{flex:1;height:100vh;overflow-y:auto;display:flex;flex-direction:column}
-.topbar{position:sticky;top:0;z-index:10;background:var(--bg-s);backdrop-filter:blur(12px);border-bottom:1px solid var(--bdr);padding:0 1.5rem;height:52px;display:flex;align-items:center;gap:.75rem;flex-shrink:0;transition:background-color .3s ease}
-.tb-bc{display:flex;align-items:center;gap:.4rem;font-size:.76rem;color:var(--tx3)}
-.tb-sp{flex:1}
-.tb-act{display:flex;align-items:center;gap:.6rem}
+.topbar{position:sticky;top:0;z-index:10;background:var(--bg-s);backdrop-filter:blur(12px);border-bottom:1px solid var(--bdr);padding:0.75rem 1.5rem;height:auto;min-height:85px;display:flex;align-items:center;gap:.75rem;flex-shrink:0;transition:background-color .3s ease}
+.tb-bc{display:flex;flex-direction:column;justify-content:center;flex:1}
+.tb-act{display:flex;align-items:center;gap:.6rem;align-self:flex-start;margin-top:2px;}
 .ib{width:32px;height:32px;border-radius:7px;border:1px solid var(--bdr);background:var(--bg-c);color:var(--tx2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s}
 .ib:hover{border-color:var(--bdr-h);color:var(--tx1);background:var(--bg-ch)}
 .ib svg{width:15px;height:15px}
+
+/* ============================================================
+   PROGRESS BAR (METAS DE FATURAMENTO)
+============================================================ */
+.goal-wrapper { margin-top:.4rem; position:relative; width:100%; max-width:550px; margin-bottom:12px; }
+.goal-track { height:6px; background:var(--bg-c); border:1px solid var(--bdr); border-radius:4px; position:relative; }
+.goal-fill { position:absolute; top:-1px; left:-1px; bottom:-1px; background:linear-gradient(to right,var(--ac),var(--ok)); border-radius:4px; transition:width .6s cubic-bezier(0.4, 0, 0.2, 1); }
+.goal-fill::after { content:''; position:absolute; top:0; right:0; bottom:0; width:20px; background:linear-gradient(to right,transparent,rgba(255,255,255,.3)); border-radius:0 4px 4px 0; }
+.goal-markers { position:absolute; top:-3px; left:0; right:0; display:flex; justify-content:space-between; pointer-events:none; }
+.gm { width:12px; height:12px; background:var(--bg-s); border:2px solid var(--bdr-h); border-radius:50%; position:relative; transition:all .3s; z-index:2; }
+.gm.active { border-color:var(--ok); background:var(--ok); box-shadow:0 0 8px rgba(52,211,153,.6); }
+.gm span { position:absolute; top:16px; left:50%; transform:translateX(-50%); font-size:.62rem; font-weight:600; color:var(--tx3); transition:all .3s; white-space:nowrap; }
+.gm.active span { color:var(--tx1); }
 
 /* ============================================================
    THEME TOGGLE
@@ -241,7 +253,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .chart-body{padding:1.25rem;position:relative;height:250px}
 
 /* ============================================================
-   FB ADS MANAGER STYLE TABS & TABLE (SIMPLIFICADO UTM)
+   FB ADS MANAGER STYLE TABS & TABLE
 ============================================================ */
 .fb-tabs { display:flex; gap:1rem; border-bottom:1px solid var(--bdr); padding:0 1.25rem; margin-bottom:1rem; }
 .fb-tab { padding:.75rem 0; font-size:.78rem; font-weight:600; color:var(--tx2); cursor:pointer; position:relative; transition: color .2s;}
@@ -380,7 +392,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
       Checkouts
     </div>
     <div class="ni" data-page="transactions" onclick="nav('transactions')">
-      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08-.402-2.599-1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
       Transações
     </div>
     <div class="s-lbl">Tráfego</div>
@@ -417,12 +429,30 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 <div id="main">
   <div class="topbar">
     <div class="tb-bc">
-      <div>
-        <div style="font-size:.65rem;color:var(--tx3);margin-bottom:1px">Faturamento Total</div>
-        <div style="font-size:1.1rem;font-weight:800;color:var(--ok);background:linear-gradient(135deg,var(--ok),#22c55e);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent">R$ 1.248.430,50</div>
+      <div style="display:flex; flex-direction:column; width:100%; max-width:550px;">
+        <div id="greeting-text" style="font-size:.78rem;font-weight:600;color:var(--tx2);margin-bottom:2px">Boa tarde, Rubens Neto 👋</div>
+        <div style="display:flex; align-items:baseline; gap:8px; margin-bottom:10px;">
+          <span style="font-size:.65rem; font-weight:700; color:var(--tx3); text-transform:uppercase; letter-spacing:.5px;">Seu Faturamento Total</span>
+          <span style="font-size:1.25rem;font-weight:900;color:var(--ok);background:linear-gradient(135deg,var(--ok),#22c55e);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent; letter-spacing:-.5px;" id="top-revenue-val">R$ 1.248.430,50</span>
+        </div>
+        
+        <div class="goal-wrapper">
+          <div class="goal-track">
+            <div class="goal-fill" id="goal-fill" style="width: 100%"></div>
+            <div class="goal-markers">
+              <div class="gm"><span>0</span></div>
+              <div class="gm"><span>10k</span></div>
+              <div class="gm"><span>50k</span></div>
+              <div class="gm"><span>100k</span></div>
+              <div class="gm"><span>250k</span></div>
+              <div class="gm"><span>500k</span></div>
+              <div class="gm"><span>1M</span></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="tb-sp"></div>
+    
     <div class="tb-act">
       <div class="theme-toggle" onclick="toggleTheme()">
         <div class="theme-toggle-slider">
@@ -444,9 +474,9 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
       <div class="dp-pills">
         <div class="dp" onclick="setGF('date','today',this)">Hoje</div>
         <div class="dp" onclick="setGF('date','yesterday',this)">Ontem</div>
-        <div class="dp active" onclick="setGF('date','7d',this)">7 dias</div>
+        <div class="dp" onclick="setGF('date','7d',this)">7 dias</div>
         <div class="dp" onclick="setGF('date','30d',this)">30 dias</div>
-        <div class="dp" onclick="setGF('date','total',this)">Total</div>
+        <div class="dp active" onclick="setGF('date','total',this)">Total</div>
       </div>
       
       <div class="bot-drop" id="gf-bot-drop">
@@ -751,7 +781,7 @@ const ICONS = {
    APP STATE
 ============================================================ */
 const state = {
-  gf: { date:'7d', bot:'all' },
+  gf: { date:'total', bot:'all' }, // Inicia em total para exibir o milhão batido de cara
   visual: { period:'day' },
   fbTab: 'campaigns',
   enabledMetrics: ['clicks','starts','pixGen','revTotal','pixPaid','revPaid','convFunnel','convPix','blocked'],
@@ -803,25 +833,82 @@ const colorVar = { ac:'var(--ac)', ok:'var(--ok)', warn:'var(--warn)', pur:'var(
 /* ============================================================
    NAVIGATION
 ============================================================ */
-const PAGE_LABELS = {dashboard:'Dashboard',hotbot:'HotBot',pressels:'Pressel Pages',checkouts:'Checkouts',transactions:'Transações',pixels:'Pixels',pixelWarming:'Pixel Warming',settings:'API PIX',integrations:'Integrações'};
 function nav(page) {
   document.querySelectorAll('.ni').forEach(el => el.classList.toggle('active', el.dataset.page === page));
-  const bcCur = document.getElementById('bc-cur');
-  if (bcCur) bcCur.textContent = PAGE_LABELS[page] || page;
   document.getElementById('page-dashboard').style.display = page === 'dashboard' ? '' : 'none';
   document.getElementById('page-placeholder').style.display = page !== 'dashboard' ? '' : 'none';
-  if (page !== 'dashboard') { document.getElementById('ph-title').textContent = PAGE_LABELS[page] || page; }
 }
 
 /* ============================================================
-   GLOBAL FILTER & DROPDOWN
+   GLOBAL FILTER & TOP BAR RENDERING
 ============================================================ */
+function renderTopBar() {
+  // Saudação por hora
+  const hour = new Date().getHours();
+  let greeting = 'Boa noite';
+  if (hour >= 5 && hour < 12) greeting = 'Bom dia';
+  else if (hour >= 12 && hour < 18) greeting = 'Boa tarde';
+  
+  document.getElementById('greeting-text').textContent = `${greeting}, Rubens Neto 👋`;
+  
+  // Calcular valor simulado para meta
+  const date = state.gf.date;
+  let val = 1248430.50;
+  if(date === 'today') val = 8430.50;
+  else if(date === 'yesterday') val = 12430.50;
+  else if (date === '7d') val = 89430.50;
+  else if (date === '30d') val = 348430.50;
+  else if (date === 'total') val = 1248430.50;
+  
+  const bot = state.gf.bot;
+  if(bot === 'fitturbo') val *= 0.8;
+  if(bot === 'nutrirobot') val *= 0.7;
+  if(bot === 'salesplus') val *= 0.6;
+  if(bot === 'prowarm') val *= 0.4;
+  
+  // Atualiza o texto do top bar
+  document.getElementById('top-revenue-val').textContent = 'R$ ' + val.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+  
+  // Atualiza progress bar (Tiers exatos solicitados)
+  const tiers = [0, 10000, 50000, 100000, 250000, 500000, 1000000];
+  let percent = 0;
+  let activeIndex = 0;
+  
+  for(let i=0; i<tiers.length; i++) {
+     if(val >= tiers[i]) {
+        activeIndex = i;
+     }
+  }
+  
+  if (activeIndex >= tiers.length - 1) {
+     percent = 100;
+  } else {
+     const base = tiers[activeIndex];
+     const next = tiers[activeIndex + 1];
+     const segmentSize = 100 / (tiers.length - 1);
+     const fraction = (val - base) / (next - base);
+     percent = (activeIndex * segmentSize) + (fraction * segmentSize);
+  }
+  
+  document.getElementById('goal-fill').style.width = percent + '%';
+  
+  const markers = document.querySelectorAll('.gm');
+  markers.forEach((m, idx) => {
+     if(val >= tiers[idx]) {
+       m.classList.add('active');
+     } else {
+       m.classList.remove('active');
+     }
+  });
+}
+
 function setGF(type, val, el) {
   if (type === 'date') {
     state.gf.date = val;
     document.querySelectorAll('.gf-bar > .dp-pills > .dp').forEach(d => d.classList.remove('active'));
     el.classList.add('active');
     
+    renderTopBar();
     renderMetrics();
     updateRevenueChart();
     updateVisualChart();
@@ -860,6 +947,7 @@ function selectBot(val, scope) {
   state.gf.bot = val;
   label.textContent = botNames[val];
   
+  renderTopBar();
   renderMetrics();
   updateRevenueChart();
   updateVisualChart();
@@ -1385,6 +1473,7 @@ function openCityModal(uf) {
    INIT E EVENTOS GLOBAIS
 ============================================================ */
 window.addEventListener('load', () => {
+  renderTopBar();
   renderMetrics();
   updateRevenueChart();
   updateVisualChart();
