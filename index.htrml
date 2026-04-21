@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HotTrack Dashboard Ultra v2</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+/* ============================================================
+   DESIGN TOKENS - DARK MODE
+============================================================ */
+:root {
+  --bg:        #080e1a;
+  --bg-s:      #0f1928;
+  --bg-c:      #111e30;
+  --bg-ch:     #162540;
+  --bdr:       rgba(56,189,248,.11);
+  --bdr-h:     rgba(56,189,248,.28);
+  --ac:        #38bdf8;
+  --ac-dk:     #0ea5e9;
+  --ac-dim:    rgba(56,189,248,.14);
+  --ok:        #34d399;
+  --ok-dim:    rgba(52,211,153,.12);
+  --warn:      #fbbf24;
+  --warn-dim:  rgba(251,191,36,.12);
+  --err:       #f87171;
+  --err-dim:   rgba(248,113,113,.12);
+  --pur:       #a78bfa;
+  --pur-dim:   rgba(167,139,250,.12);
+  --tx1:       #f0f6ff;
+  --tx2:       #7d9bb5;
+  --tx3:       #4a6480;
+  --sw:        240px;
+}
+
+/* ============================================================
+   LIGHT MODE TOKENS
+============================================================ */
+[data-theme="light"] {
+  --bg:        #ffffff;
+  --bg-s:      #f8fafc;
+  --bg-c:      #f1f5f9;
+  --bg-ch:     #e2e8f0;
+  --bdr:       rgba(99,102,241,.15);
+  --bdr-h:     rgba(99,102,241,.35);
+  --ac:        #6366f1;
+  --ac-dk:     #4f46e5;
+  --ac-dim:    rgba(99,102,241,.14);
+  --ok:        #10b981;
+  --ok-dim:    rgba(16,185,129,.12);
+  --warn:      #f59e0b;
+  --warn-dim:  rgba(245,158,11,.12);
+  --err:       #ef4444;
+  --err-dim:   rgba(239,68,68,.12);
+  --pur:       #a855f7;
+  --pur-dim:   rgba(168,85,247,.12);
+  --tx1:       #0f172a;
+  --tx2:       #475569;
+  --tx3:       #64748b;
+}
+
+/* ============================================================
+   BASE STYLES
+============================================================ */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow-x:hidden}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--tx1);display:flex;transition:background-color .3s ease,color .3s ease}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bdr-h);border-radius:10px}
+
+/* ============================================================
+   SIDEBAR
+============================================================ */
+#sidebar{width:var(--sw);min-width:var(--sw);height:100vh;background:var(--bg-s);border-right:1px solid var(--bdr);display:flex;flex-direction:column;z-index:20}
+.s-logo{padding:1.1rem 1rem .9rem;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:.6rem}
+.s-icon{width:32px;height:32px;background:linear-gradient(135deg,#0ea5e9,#7c3aed);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0;box-shadow:0 0 14px rgba(14,165,233,.4)}
+.s-txt{font-size:1rem;font-weight:800;letter-spacing:-.3px;color:var(--tx1)}
+.s-badge{margin-left:auto;font-size:.58rem;font-weight:700;color:var(--ac);background:var(--ac-dim);border:1px solid rgba(56,189,248,.2);padding:2px 6px;border-radius:4px}
+.s-nav{flex:1;overflow-y:auto;padding:.6rem}
+.s-lbl{font-size:.62rem;font-weight:700;letter-spacing:1px;color:var(--tx3);text-transform:uppercase;padding:.5rem .5rem .2rem;margin-top:.4rem}
+.ni{display:flex;align-items:center;gap:.55rem;padding:.55rem .7rem;border-radius:7px;cursor:pointer;color:var(--tx2);font-size:.82rem;font-weight:500;transition:all .15s;border:1px solid transparent;margin-bottom:1px;user-select:none}
+.ni:hover{background:rgba(56,189,248,.06);color:var(--tx1);border-color:var(--bdr)}
+.ni.active{background:linear-gradient(135deg,rgba(14,165,233,.17),rgba(124,58,237,.10));color:var(--ac);font-weight:600;border-color:rgba(56,189,248,.24)}
+.ni.active::before{content:'';position:absolute;left:0;top:25%;height:50%;width:3px;background:linear-gradient(to bottom,var(--ac),#7c3aed);border-radius:0 3px 3px 0}
+.ni{position:relative}
+.ni svg{width:15px;height:15px;flex-shrink:0;opacity:.7}
+.ni.active svg{opacity:1}
+.n-badge{margin-left:auto;font-size:.62rem;font-weight:700;padding:1px 6px;border-radius:10px;background:var(--ac-dim);color:var(--ac)}
+.s-foot{padding:.65rem;border-top:1px solid var(--bdr)}
+.u-card{display:flex;align-items:center;gap:.55rem;padding:.55rem .7rem;border-radius:7px;cursor:pointer;border:1px solid var(--bdr);background:var(--bg-c);transition:all .15s}
+.u-card:hover{border-color:var(--bdr-h);background:var(--bg-ch)}
+.u-av{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,#0ea5e9,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:#fff;flex-shrink:0}
+.u-nm{font-size:.78rem;font-weight:600;color:var(--tx1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.u-pl{font-size:.65rem;color:var(--tx3)}
+
+/* ============================================================
+   MAIN CONTENT
+============================================================ */
+#main{flex:1;height:100vh;overflow-y:auto;display:flex;flex-direction:column}
+.topbar{position:sticky;top:0;z-index:10;background:var(--bg-s);backdrop-filter:blur(12px);border-bottom:1px solid var(--bdr);padding:0 1.5rem;height:52px;display:flex;align-items:center;gap:.75rem;flex-shrink:0;transition:background-color .3s ease}
+.tb-bc{display:flex;align-items:center;gap:.4rem;font-size:.76rem;color:var(--tx3)}
+.tb-bc .cur{color:var(--tx1);font-weight:600}
+.tb-sp{flex:1}
+.tb-act{display:flex;align-items:center;gap:.6rem}
+.ib{width:32px;height:32px;border-radius:7px;border:1px solid var(--bdr);background:var(--bg-c);color:var(--tx2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s}
+.ib:hover{border-color:var(--bdr-h);color:var(--tx1);background:var(--bg-ch)}
+.ib svg{width:15px;height:15px}
+
+/* ============================================================
+   THEME TOGGLE
+============================================================ */
+.theme-toggle{position:relative;width:48px;height:24px;background:var(--bg-c);border:2px solid var(--bdr);border-radius:12px;cursor:pointer;transition:all .3s ease}
+.theme-toggle:hover{border-color:var(--bdr-h)}
+.theme-toggle-slider{position:absolute;top:2px;left:2px;width:16px;height:16px;background:var(--ac);border-radius:50%;transition:all .3s ease;display:flex;align-items:center;justify-content:center;color:var(--bg);font-size:.6rem}
+[data-theme="light"] .theme-toggle-slider{transform:translateX(24px)}
+
+/* ============================================================
+   PAGE CONTENT
+============================================================ */
+.pg{padding:1.5rem;flex:1}
+
+/* ============================================================
+   GLOBAL FILTER BAR
+============================================================ */
+.gf-bar{display:flex;align-items:center;gap:.75rem;margin-bottom:1.4rem;flex-wrap:wrap}
+.dp-pills{display:flex;gap:3px;background:var(--bg-c);border:1px solid var(--bdr);padding:3px;border-radius:9px}
+.dp{padding:.35rem .8rem;border-radius:6px;font-size:.75rem;font-weight:500;color:var(--tx2);cursor:pointer;transition:all .15s;white-space:nowrap;border:1px solid transparent}
+.dp:hover{color:var(--tx1)}
+.dp.active{background:linear-gradient(135deg,rgba(14,165,233,.2),rgba(124,58,237,.12));color:var(--ac);font-weight:600;border-color:rgba(56,189,248,.22)}
+
+/* ============================================================
+   DROPDOWNS
+============================================================ */
+.bot-drop{position:relative;z-index:9999999}
+.bot-drop-btn{display:flex;align-items:center;gap:.5rem;font-size:.76rem;font-weight:600;color:var(--tx1);padding:.4rem .7rem;border:1px solid var(--bdr);border-radius:8px;background:var(--bg-c);cursor:pointer;transition:all .15s;position:relative;z-index:9999999}
+.bot-drop-btn:hover{border-color:var(--bdr-h);background:var(--bg-ch)}
+.bot-drop-btn.open{border-color:var(--ac);background:var(--ac-dim)}
+.bot-drop-menu{position:fixed;top:0;left:0;right:0;background:transparent;z-index:99999999;opacity:0;visibility:hidden;transition:all .15s;padding:20px;box-sizing:border-box}
+.bot-drop-menu.open{opacity:1;visibility:visible}
+.bot-drop-menu-inner{background:var(--bg-s);border:1px solid var(--bdr);border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,.4);max-width:300px;margin:0 auto}
+.bot-drop-item{display:flex;align-items:center;gap:.6rem;padding:.5rem .7rem;font-size:.76rem;color:var(--tx1);cursor:pointer;transition:background .12s}
+.bot-drop-item:hover{background:var(--bg-ch)}
+.bot-drop-item:first-child{border-radius:8px 8px 0 0}
+.bot-drop-item:last-child{border-radius:0 0 8px 8px}
+
+/* ============================================================
+   METRICS
+============================================================ */
+.mh{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem}
+.mh-title{font-size:.82rem;font-weight:700;color:var(--tx2);letter-spacing:.5px;text-transform:uppercase}
+.btn-customize{display:flex;align-items:center;gap:.4rem;padding:.35rem .8rem;background:var(--bg-c);border:1px solid var(--bdr);border-radius:7px;color:var(--tx2);font-size:.75rem;font-weight:600;cursor:pointer;transition:all .15s}
+.btn-customize:hover{border-color:var(--bdr-h);color:var(--tx1)}
+.btn-customize svg{width:13px;height:13px}
+.mg{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:.875rem;margin-bottom:1.4rem}
+.mc{background:var(--bg-c);border:1px solid var(--bdr);border-radius:13px;padding:1.1rem 1.1rem .85rem;position:relative;overflow:hidden;transition:all .3s;cursor:move}
+.mc:hover{border-color:var(--bdr-h);transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,.3)}
+.mc.dragging{opacity:.5;transform:rotate(2deg)}
+.mc::after{content:'';position:absolute;top:-25px;right:-25px;width:70px;height:70px;border-radius:50%;opacity:.2;transition:opacity .25s}
+.mc:hover::after{opacity:.4}
+.mc.c-ac::after{background:var(--ac)}
+.mc.c-ok::after{background:var(--ok)}
+.mc.c-warn::after{background:var(--warn)}
+.mc.c-pur::after{background:var(--pur)}
+.mc.c-err::after{background:var(--err)}
+.mc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.7rem}
+.mc-ico{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mc-ico svg{width:15px;height:15px}
+.mc-ico.c-ac{background:var(--ac-dim);color:var(--ac)}
+.mc-ico.c-ok{background:var(--ok-dim);color:var(--ok)}
+.mc-ico.c-warn{background:var(--warn-dim);color:var(--warn)}
+.mc-ico.c-pur{background:var(--pur-dim);color:var(--pur)}
+.mc-ico.c-err{background:var(--err-dim);color:var(--err)}
+.mc-trend{display:flex;align-items:center;gap:2px;font-size:.68rem;font-weight:700;padding:2px 6px;border-radius:5px}
+.mc-trend.up{color:var(--ok);background:var(--ok-dim)}
+.mc-trend.down{color:var(--err);background:var(--err-dim)}
+.mc-trend svg{width:10px;height:10px}
+.mc-val{font-size:1.6rem;font-weight:800;letter-spacing:-.5px;line-height:1;font-family:'JetBrains Mono',monospace}
+.mc-val.c-ac{color:var(--ac)}
+.mc-val.c-ok{color:var(--ok)}
+.mc-val.c-warn{color:var(--warn)}
+.mc-val.c-pur{color:var(--pur)}
+.mc-val.c-err{color:var(--err)}
+.mc-lbl{font-size:.7rem;color:var(--tx2);font-weight:500;margin-top:.15rem}
+.mc-spark{margin-top:.65rem;height:32px}
+
+/* ============================================================
+   CUSTOMIZE PANEL
+============================================================ */
+.cp-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:40;display:none;backdrop-filter:blur(3px)}
+.cp-overlay.open{display:block}
+.cp-drawer{position:fixed;top:0;right:-340px;width:320px;height:100vh;background:var(--bg-s);border-left:1px solid var(--bdr-h);z-index:41;display:flex;flex-direction:column;transition:right .25s ease;padding:1.25rem}
+.cp-drawer.open{right:0}
+.cp-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;padding-bottom:.875rem;border-bottom:1px solid var(--bdr)}
+.cp-title{font-size:.95rem;font-weight:700;color:var(--tx1)}
+.cp-close{width:30px;height:30px;border-radius:7px;border:1px solid var(--bdr);background:var(--bg-c);color:var(--tx2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s}
+.cp-close:hover{border-color:var(--bdr-h);color:var(--tx1)}
+.cp-close svg{width:14px;height:14px}
+.cp-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:.5rem}
+.cp-item{display:flex;align-items:center;gap:.75rem;padding:.75rem;background:var(--bg-c);border:1px solid var(--bdr);border-radius:9px;transition:all .15s;cursor:move}
+.cp-item.enabled{border-color:rgba(56,189,248,.2)}
+.cp-item.dragging{opacity:.5}
+.cp-drag{color:var(--tx3);cursor:grab;display:flex;flex-direction:column;gap:2px}
+.cp-drag span{display:block;width:14px;height:1.5px;background:currentColor;border-radius:2px}
+.cp-info{flex:1}
+.cp-name{font-size:.8rem;font-weight:600;color:var(--tx1)}
+.cp-desc{font-size:.68rem;color:var(--tx3);margin-top:1px}
+.tog{position:relative;width:36px;height:20px;cursor:pointer;flex-shrink:0}
+.tog input{opacity:0;width:0;height:0}
+.tog-sl{position:absolute;inset:0;background:var(--bg-s);border:1px solid var(--bdr);border-radius:20px;transition:all .2s}
+.tog-sl::before{content:'';position:absolute;height:12px;width:12px;left:3px;bottom:3px;background:var(--tx3);border-radius:50%;transition:all .2s}
+.tog input:checked + .tog-sl{background:var(--ac-dim);border-color:var(--ac)}
+.tog input:checked + .tog-sl::before{transform:translateX(16px);background:var(--ac)}
+.cp-arrows{display:flex;flex-direction:column;gap:2px}
+.cp-arr{width:22px;height:18px;border-radius:4px;border:1px solid var(--bdr);background:var(--bg-s);color:var(--tx3);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .13s;font-size:.6rem}
+.cp-arr:hover{border-color:var(--bdr-h);color:var(--tx1)}
+
+/* ============================================================
+   CHART CARD
+============================================================ */
+.chart-card{background:var(--bg-c);border:1px solid var(--bdr);border-radius:13px;overflow:hidden;margin-bottom:1.4rem;position:relative;z-index:1}
+.chart-hd{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;border-bottom:1px solid var(--bdr);flex-wrap:wrap;gap:.75rem}
+.chart-hd-left .ch-title{font-size:.88rem;font-weight:700;color:var(--tx1)}
+.chart-hd-left .ch-sub{font-size:.7rem;color:var(--tx3);margin-top:1px}
+.chart-filters{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.cf-pills{display:flex;gap:2px;background:var(--bg-s);border:1px solid var(--bdr);padding:3px;border-radius:7px}
+.cf-p{padding:.28rem .65rem;border-radius:5px;font-size:.7rem;font-weight:500;color:var(--tx2);cursor:pointer;transition:all .13s;white-space:nowrap;border:1px solid transparent}
+.cf-p:hover{color:var(--tx1)}
+.cf-p.active{background:var(--ac-dim);color:var(--ac);font-weight:600;border-color:rgba(56,189,248,.2)}
+.chart-body{padding:1.25rem;position:relative;height:250px}
+
+/* ============================================================
+   FB ADS MANAGER STYLE TABS & TABLE
+============================================================ */
+.fb-tabs { display:flex; gap:1rem; border-bottom:1px solid var(--bdr); padding:0 1.25rem; margin-bottom:1rem; }
+.fb-tab { padding:.75rem 0; font-size:.78rem; font-weight:600; color:var(--tx2); cursor:pointer; position:relative; transition: color .2s;}
+.fb-tab:hover { color:var(--tx1); }
+.fb-tab.active { color:var(--tx1); }
+.fb-tab.active::after { content:''; position:absolute; bottom:-1px; left:0; right:0; height:2px; background:var(--ac); }
+.fb-table-wrapper { overflow-x:auto; padding:0 1.25rem 1.25rem; }
+.fb-table { width:100%; border-collapse:collapse; text-align:left; font-size:.75rem; white-space:nowrap; }
+.fb-table th { padding:.5rem; color:var(--tx3); font-weight:600; border-bottom:1px solid var(--bdr); }
+.fb-table td { padding:.75rem .5rem; color:var(--tx1); border-bottom:1px solid rgba(56,189,248,.05); }
+.fb-table tr:hover td { background:var(--bg-ch); }
+.fb-status { display:inline-flex; align-items:center; gap:6px; font-weight:500;}
+.fb-status.active .dot { width:8px; height:8px; background:var(--ok); border-radius:50%; box-shadow: 0 0 4px var(--ok);}
+.fb-status.paused .dot { width:8px; height:8px; background:var(--tx3); border-radius:50%; }
+
+/* ============================================================
+   BOT CARDS
+============================================================ */
+.bots-section{margin-bottom:1.4rem}
+.bots-sec-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem}
+.bots-sec-title{font-size:.82rem;font-weight:700;color:var(--tx2);letter-spacing:.5px;text-transform:uppercase}
+.bots-scroll{display:flex;gap:1rem;overflow-x:auto;padding-bottom:.5rem}
+.bots-scroll::-webkit-scrollbar{height:4px}
+.bot-card{min-width:220px;max-width:220px;background:var(--bg-c);border:1px solid var(--bdr);border-radius:13px;padding:1rem;display:flex;flex-direction:column;gap:.75rem;transition:all .2s;flex-shrink:0}
+.bot-card:hover{border-color:var(--bdr-h);transform:translateY(-2px);box-shadow:0 12px 28px rgba(0,0,0,.4)}
+.bc-top{display:flex;align-items:center;justify-content:space-between}
+.bc-status{display:flex;align-items:center;gap:.35rem;font-size:.67rem;font-weight:600;padding:2px 7px;border-radius:20px}
+.bc-status.ativo{background:var(--ok-dim);color:var(--ok)}
+.bc-status.pausado{background:var(--warn-dim);color:var(--warn)}
+.bc-status-dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.bc-center{display:flex;flex-direction:column;align-items:center;gap:.4rem}
+.bc-avatar{width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:800;color:#fff;flex-shrink:0;box-shadow:0 4px 16px rgba(0,0,0,.35)}
+.bc-name{font-size:.88rem;font-weight:700;color:var(--tx1);text-align:center}
+.bc-handle{font-size:.68rem;color:var(--tx3);text-align:center}
+.bc-chart{height:48px;width:100%}
+.bc-stats{display:flex;flex-direction:column;gap:.35rem}
+.bcs-row{display:flex;justify-content:space-between;align-items:center;font-size:.73rem;padding:.22rem 0}
+.bcs-lbl{color:var(--tx2)}
+.bcs-val{font-weight:700;color:var(--tx1);text-align:right}
+.bcs-val.c-ok{color:var(--ok)}
+.bcs-val.c-ac{color:var(--ac)}
+.bc-funnel{background:linear-gradient(135deg,var(--ac-dim),var(--pur-dim));border:1px solid rgba(56,189,248,.18);border-radius:8px;padding:.55rem .7rem}
+.bcf-label{font-size:.62rem;color:var(--tx3);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.bcf-name{font-size:.78rem;font-weight:700;color:var(--tx1);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bcf-rev{font-size:.72rem;color:var(--ok);font-weight:600}
+.bc-divider{height:1px;background:var(--bdr)}
+
+/* ============================================================
+   BRAZIL MAP & OTHERS
+============================================================ */
+.map-card{background:var(--bg-c);border:1px solid var(--bdr);border-radius:13px;overflow:hidden}
+.map-hd{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;border-bottom:1px solid var(--bdr);flex-wrap:wrap;gap:.75rem}
+.map-hd-l .mh-title-lg{font-size:.88rem;font-weight:700;color:var(--tx1)}
+.map-hd-l .mh-sub{font-size:.7rem;color:var(--tx3);margin-top:1px}
+.state-rank-item{display:flex;align-items:center;gap:.6rem;padding:.45rem 0;border-bottom:1px solid rgba(56,189,248,.05);cursor:pointer}
+.state-rank-item:last-child{border-bottom:none}
+.state-rank-item:hover{background:var(--bg-ch);margin:0 -.5rem;padding:.45rem .5rem;border-radius:6px}
+.sri-rank{font-size:.7rem;font-weight:700;color:var(--tx3);width:16px;text-align:center;flex-shrink:0}
+.sri-uf{font-size:.78rem;font-weight:700;color:var(--tx1);width:26px;flex-shrink:0}
+.sri-bar-wrap{flex:1}
+.sri-bar{height:4px;border-radius:4px;background:linear-gradient(to right,var(--ac-dk),var(--ac));transition:width .4s}
+.sri-val{font-size:.7rem;color:var(--tx2);font-weight:500;white-space:nowrap}
+.btn{display:inline-flex;align-items:center;gap:.35rem;padding:.4rem .85rem;border-radius:7px;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .15s;border:none}
+.btn svg{width:13px;height:13px}
+.btn-pr{background:linear-gradient(135deg,#0ea5e9,#7c3aed);color:#fff;box-shadow:0 4px 12px rgba(14,165,233,.22)}
+.btn-pr:hover{opacity:.9;transform:translateY(-1px)}
+.btn-gh{background:var(--bg-c);color:var(--tx2);border:1px solid var(--bdr)}
+.btn-gh:hover{border-color:var(--bdr-h);color:var(--tx1)}
+.positioning-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem}
+.pos-item{display:flex;align-items:center;gap:.75rem;padding:.75rem;background:var(--bg-c);border:1px solid var(--bdr);border-radius:10px;transition:all .15s;cursor:pointer;position:relative;z-index:2}
+.pos-item:hover{border-color:var(--bdr-h);background:var(--bg-ch);transform:translateY(-1px)}
+.pos-icon{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.1rem;flex-shrink:0}
+.pos-info{flex:1}
+.pos-name{font-size:.78rem;font-weight:600;color:var(--tx1);margin-bottom:2px}
+.pos-metrics{display:flex;align-items:baseline;gap:.4rem}
+.pos-val{font-size:.92rem;font-weight:700;color:var(--ok)}
+.pos-label{font-size:.65rem;color:var(--tx3)}
+.devices-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem}
+.device-item{display:flex;flex-direction:column;align-items:center;padding:1rem;background:var(--bg-c);border:1px solid var(--bdr);border-radius:10px;text-align:center;transition:all .15s;position:relative;z-index:4}
+.device-item:hover{border-color:var(--bdr-h);background:var(--bg-ch);transform:translateY(-1px)}
+.device-icon{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--ac),var(--ac-dk));display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.2rem;margin-bottom:.75rem}
+.device-name{font-size:.82rem;font-weight:700;color:var(--tx1);margin-bottom:.5rem}
+.device-stats{display:flex;gap:1rem}
+.device-stat{display:flex;flex-direction:column;align-items:center}
+.ds-val{font-size:.88rem;font-weight:700;color:var(--ac)}
+.ds-label{font-size:.62rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.3px}
+
+.mockup-tag{position:fixed;bottom:.875rem;right:.875rem;background:linear-gradient(135deg,#0ea5e9,#7c3aed);color:#fff;font-size:.65rem;font-weight:700;padding:4px 10px;border-radius:20px;z-index:200;letter-spacing:.5px;box-shadow:0 4px 12px rgba(14,165,233,.4)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .3s ease both}
+</style>
+</head>
+<body>
+
+<aside id="sidebar">
+  <div class="s-logo">
+    <div class="s-icon">HT</div>
+    <span class="s-txt">HotTrack</span>
+    <span class="s-badge">PRO</span>
+  </div>
+  <nav class="s-nav">
+    <div class="s-lbl">Principal</div>
+    <div class="ni active" data-page="dashboard" onclick="nav('dashboard')">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      Dashboard
+    </div>
+    <div class="ni" data-page="hotbot" onclick="nav('hotbot')">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+      HotBot
+      <span class="n-badge">3</span>
+    </div>
+    <div class="s-lbl">Vendas</div>
+    <div class="ni" data-page="pressels" onclick="nav('pressels')">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      Pressel Pages
+    </div>
+    <div class="ni" data-page="checkouts" onclick="nav('checkouts')">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+      Checkouts
+    </div>
+    <div class="ni" data-page="transactions" onclick="nav('transactions')">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      Transações
+    </div>
+    <div class="s-lbl">Tráfego</div>
+    <div class="ni" data-page="pixels" onclick="nav('pixels')">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg>
+      Pixels
+    </div>
+    <div class="ni" data-page="pixelWarming" onclick="nav('pixelWarming')">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/></svg>
+      Pixel Warming
+    </div>
+    <div class="s-lbl">Config</div>
+    <div class="ni" data-page="settings" onclick="nav('settings')">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      API PIX
+    </div>
+    <div class="ni" data-page="integrations" onclick="nav('integrations')">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"/></svg>
+      Integrações
+    </div>
+  </nav>
+  <div class="s-foot">
+    <div class="u-card">
+      <div class="u-av">RR</div>
+      <div style="flex:1;min-width:0">
+        <div class="u-nm">Rubens Neto</div>
+        <div class="u-pl">Plano Pro</div>
+      </div>
+      <svg style="width:13px;height:13px;color:var(--tx3);flex-shrink:0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+    </div>
+  </div>
+</aside>
+
+<div id="main">
+  <div class="topbar">
+    <div class="tb-bc">
+      <div>
+        <div style="font-size:.65rem;color:var(--tx3);margin-bottom:1px">Faturamento Total</div>
+        <div style="font-size:1.1rem;font-weight:800;color:var(--ok);background:linear-gradient(135deg,var(--ok),#22c55e);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent">R$ 1.248.430,50</div>
+      </div>
+      <div style="margin:0 1rem">
+        <div style="font-size:.65rem;color:var(--tx3);margin-bottom:1px">Workspace</div>
+        <div style="font-size:.9rem;font-weight:700;color:var(--tx1)">HotTrack</div>
+      </div>
+      <i class="fas fa-chevron-right" style="font-size:.7rem"></i>
+      <span class="cur" id="bc-cur">Dashboard</span>
+    </div>
+    <div class="tb-sp"></div>
+    <div class="tb-act">
+      <div class="theme-toggle" onclick="toggleTheme()">
+        <div class="theme-toggle-slider">
+          <i class="fas fa-moon" id="theme-icon"></i>
+        </div>
+      </div>
+      <button class="ib" title="Notificações">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+      </button>
+      <button class="ib" title="Configurações">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div id="page-dashboard" class="pg">
+
+    <div class="gf-bar fade-up">
+      <div class="dp-pills">
+        <div class="dp" onclick="setGF('date','today',this)">Hoje</div>
+        <div class="dp" onclick="setGF('date','yesterday',this)">Ontem</div>
+        <div class="dp active" onclick="setGF('date','7d',this)">7 dias</div>
+        <div class="dp" onclick="setGF('date','30d',this)">30 dias</div>
+        <div class="dp" onclick="setGF('date','total',this)">Total</div>
+      </div>
+      <div class="bot-drop" id="gf-bot-drop">
+        <div class="bot-drop-btn" id="gf-bot-btn" onclick="toggleBotDrop('gf-bot-drop')">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+          <span id="gf-bot-label">Todos os bots</span>
+          <svg class="arr" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="width:12px;height:12px"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="bot-drop-menu" id="gf-bot-menu">
+          <div class="bot-drop-menu-inner">
+            <div class="bot-drop-item" data-bot="all" onclick="selectBot('all','gf')" style="background:var(--ac-dim);color:var(--ac);">Todos os bots</div>
+            <div class="bot-drop-item" data-bot="fitturbo" onclick="selectBot('fitturbo','gf')">FitTurbo</div>
+            <div class="bot-drop-item" data-bot="nutrirobot" onclick="selectBot('nutrirobot','gf')">NutriRobot</div>
+            <div class="bot-drop-item" data-bot="salesplus" onclick="selectBot('salesplus','gf')">SalesPlus</div>
+            <div class="bot-drop-item" data-bot="prowarm" onclick="selectBot('prowarm','gf')">ProWarm</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mh fade-up">
+      <span class="mh-title">Métricas</span>
+      <div style="display:flex;gap:0.5rem;align-items:center">
+        <button class="btn-customize" onclick="toggleCustomize()">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+          Personalizar
+        </button>
+      </div>
+    </div>
+
+    <div class="mg fade-up" id="metrics-grid"></div>
+
+    <div class="chart-card fade-up">
+      <div class="chart-hd">
+        <div class="chart-hd-left">
+          <div class="ch-title">Faturamento Pago</div>
+          <div class="ch-sub">Apenas vendas confirmadas · Sincronizado com o filtro inicial</div>
+        </div>
+      </div>
+      <div class="chart-body">
+        <canvas id="revenueChart"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-card fade-up">
+      <div class="chart-hd">
+        <div class="chart-hd-left">
+          <div class="ch-title">Análise Visual de Métricas</div>
+          <div class="ch-sub">Comparativo de fluxo: Cliques, Starts e Vendas</div>
+        </div>
+        <div class="chart-filters">
+          <div class="cf-pills">
+            <div class="cf-p" onclick="setVisualPeriod('hour',this)">Hora</div>
+            <div class="cf-p active" onclick="setVisualPeriod('day',this)">Dia</div>
+            <div class="cf-p" onclick="setVisualPeriod('month',this)">Mês</div>
+          </div>
+        </div>
+      </div>
+      <div class="chart-body" style="height:280px">
+        <canvas id="visualChart"></canvas>
+      </div>
+    </div>
+
+    <div class="bots-section fade-up">
+      <div class="bots-sec-hd">
+        <span class="bots-sec-title">Desempenho por Bot</span>
+        <button class="btn btn-gh" style="font-size:.72rem;padding:.3rem .7rem">Ver todos</button>
+      </div>
+      <div class="bots-scroll" id="bots-container"></div>
+    </div>
+
+    <div class="chart-card fade-up">
+      <div class="chart-hd" style="padding-bottom:0; border-bottom:none;">
+        <div class="chart-hd-left" style="padding:1rem 1.25rem 0;">
+          <div class="ch-title">Gestão de Tráfego</div>
+          <div class="ch-sub">Sincronizado com o filtro inicial</div>
+        </div>
+      </div>
+      <div class="fb-tabs">
+        <div class="fb-tab active" onclick="setFbTab('campaigns', this)">Campanhas</div>
+        <div class="fb-tab" onclick="setFbTab('adsets', this)">Conjuntos de anúncios</div>
+        <div class="fb-tab" onclick="setFbTab('ads', this)">Anúncios</div>
+      </div>
+      <div class="fb-table-wrapper">
+        <table class="fb-table">
+          <thead>
+            <tr>
+              <th style="width:30px"><input type="checkbox" style="cursor:pointer"></th>
+              <th>Nome da Campanha</th>
+              <th>Status</th>
+              <th>Resultados (Vendas)</th>
+              <th>Custo por resultado</th>
+              <th>Valor gasto</th>
+              <th>ROAS</th>
+            </tr>
+          </thead>
+          <tbody id="fb-table-body">
+            </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="chart-card fade-up">
+      <div class="chart-hd">
+        <div class="chart-hd-left">
+          <div class="ch-title">Top Estados por Vendas</div>
+          <div class="ch-sub">Clique para ver cidades e vendas detalhadas</div>
+        </div>
+      </div>
+      <div class="chart-body">
+        <div id="top-states-list"></div>
+      </div>
+    </div>
+
+    <div class="chart-card fade-up">
+      <div class="chart-hd">
+        <div class="chart-hd-left">
+          <div class="ch-title">Posicionamentos</div>
+          <div class="ch-sub">Vendas e vendas pagas por posicionamento</div>
+        </div>
+      </div>
+      <div class="chart-body">
+        <div class="positioning-grid">
+          </div>
+      </div>
+    </div>
+
+    <div class="chart-card fade-up">
+      <div class="chart-hd">
+        <div class="chart-hd-left">
+          <div class="ch-title">Dispositivos</div>
+          <div class="ch-sub">Vendas e vendas pagas por dispositivo</div>
+        </div>
+      </div>
+      <div class="chart-body">
+        <div class="devices-grid">
+          </div>
+      </div>
+    </div>
+    <div style="height:1.5rem"></div>
+  </div><div id="page-placeholder" class="pg" style="display:none">
+    <h1 style="font-size:1.4rem;font-weight:800;margin-bottom:.5rem" id="ph-title">Página</h1>
+    <p style="color:var(--tx2);font-size:.82rem;margin-bottom:1.5rem" id="ph-sub">Em construção no mockup.</p>
+    <div style="background:var(--bg-c);border:1px solid var(--bdr);border-radius:13px;padding:3rem;text-align:center">
+      <div style="font-size:2.5rem;margin-bottom:.75rem">🚧</div>
+      <div style="font-weight:700;margin-bottom:.4rem">Seção em desenvolvimento</div>
+      <div style="font-size:.8rem;color:var(--tx2);margin-bottom:1.5rem">Volte ao Dashboard para ver as melhorias</div>
+      <button class="btn btn-pr" onclick="nav('dashboard')">👈 Dashboard</button>
+    </div>
+  </div>
+</div><div class="cp-overlay" id="cp-overlay" onclick="toggleCustomize()"></div>
+<div class="cp-drawer" id="cp-drawer">
+  <div class="cp-header">
+    <span class="cp-title">Personalizar Métricas</span>
+    <div class="cp-close" onclick="toggleCustomize()">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+    </div>
+  </div>
+  <div class="cp-list" id="cp-list"></div>
+</div>
+
+<div class="city-modal-bg" id="city-modal">
+  <div class="city-modal">
+    <div class="cm-head">
+      <span class="cm-title" id="city-modal-title">Cidades</span>
+      <div class="cm-close" onclick="closeCityModal()">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      </div>
+    </div>
+    <div class="cm-list" id="city-modal-list"></div>
+  </div>
+</div>
+
+<div class="mockup-tag">🚀 ULTRA v2</div>
+
+<script>
+/* ============================================================
+   MOCK DATA
+============================================================ */
+const BOTS = [
+  { id:'fitturbo',   name:'FitTurbo',   handle:'@fitturbo_bot',   initials:'FT', gradient:'linear-gradient(135deg,#0ea5e9,#7c3aed)', status:'ativo',
+    metrics:{ clicks:8420, starts:6200, pixGen:1450, pixPaid:1234, revPaid:28900, convPix:85.1, convFunnel:14.7, funnel:'Funil Principal', funnelRev:18500 },
+    sparkline:[6100,9800,8200,12300,9700,15200,11390] },
+  { id:'nutrirobot', name:'NutriRobot', handle:'@nutrirobot_bot', initials:'NR', gradient:'linear-gradient(135deg,#f59e0b,#ef4444)', status:'ativo',
+    metrics:{ clicks:6830, starts:5100, pixGen:1200, pixPaid:987, revPaid:24570, convPix:82.3, convFunnel:14.5, funnel:'Nutrição Premium', funnelRev:14200 },
+    sparkline:[4100,7200,6000,9400,7800,12100,8870] },
+  { id:'salesplus',  name:'SalesPlus',  handle:'@salesplus_bot',  initials:'SP', gradient:'linear-gradient(135deg,#34d399,#0ea5e9)',  status:'ativo',
+    metrics:{ clicks:5181, starts:3900, pixGen:800, pixPaid:626, revPaid:16020, convPix:78.3, convFunnel:12.1, funnel:'Upsell Rápido', funnelRev:9400 },
+    sparkline:[3200,5600,4700,7100,5900,8900,6620] },
+  { id:'prowarm',    name:'ProWarm',    handle:'@prowarm_bot',    initials:'PW', gradient:'linear-gradient(135deg,#a78bfa,#ec4899)',  status:'pausado',
+    metrics:{ clicks:4400, starts:2800, pixGen:600, pixPaid:400, revPaid:9740, convPix:66.7, convFunnel:9.1, funnel:'Aquecimento V2', funnelRev:5600 },
+    sparkline:[2100,3200,2800,4100,3200,5100,3510] },
+];
+
+const MOCK_METRICS = {
+  all: {
+    clicks:24831, starts:18000, pixGen:4050, pixPaid:3247, revTotal:89430, revPaid:79230, convFunnel:15.6, convPix:80.2, blocked:423,
+    trend:{ clicks:18, starts:12, pixGen:7, pixPaid:11, revTotal:24, revPaid:22, convFunnel:3, convPix:1, blocked:-8 }
+  },
+  fitturbo: {
+    clicks:8420, starts:6200, pixGen:1450, pixPaid:1234, revTotal:32100, revPaid:28900, convFunnel:14.7, convPix:85.1, blocked:120,
+    trend:{ clicks:21, starts:15, pixGen:9, pixPaid:13, revTotal:28, revPaid:25, convFunnel:2, convPix:3, blocked:-5 }
+  },
+  nutrirobot: {
+    clicks:6830, starts:5100, pixGen:1200, pixPaid:987, revTotal:26400, revPaid:24570, convFunnel:14.5, convPix:82.3, blocked:98,
+    trend:{ clicks:14, starts:10, pixGen:5, pixPaid:9, revTotal:19, revPaid:18, convFunnel:1, convPix:2, blocked:-4 }
+  },
+  salesplus: {
+    clicks:5181, starts:3900, pixGen:800, pixPaid:626, revTotal:17200, revPaid:16020, convFunnel:12.1, convPix:78.3, blocked:72,
+    trend:{ clicks:8, starts:6, pixGen:3, pixPaid:7, revTotal:14, revPaid:13, convFunnel:-1, convPix:-2, blocked:-11 }
+  },
+  prowarm: {
+    clicks:4400, starts:2800, pixGen:600, pixPaid:400, revTotal:13730, revPaid:9740, convFunnel:9.1, convPix:66.7, blocked:133,
+    trend:{ clicks:-3, starts:-5, pixGen:-8, pixPaid:-12, revTotal:-6, revPaid:-10, convFunnel:-4, convPix:-7, blocked:15 }
+  }
+};
+
+const CHART_DATA = {
+  '30d': {
+    labels:['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30'],
+    all:[2100,3200,2800,4500,3900,5600,4100,6200,5400,7100,6300,8200,7400,9100,8300,10200,9100,11300,10400,12100,11200,13400,12300,14500,13200,15700,14100,16800,15200,18700],
+    fitturbo:[900,1400,1100,1900,1600,2300,1700,2600,2200,3000,2600,3500,3100,3900,3500,4300,3900,4800,4400,5100,4800,5700,5200,6100,5600,6700,5900,7100,6400,7900],
+    nutrirobot:[700,1100,900,1500,1300,1900,1400,2100,1800,2400,2100,2800,2500,3200,2900,3500,3100,3900,3600,4100,3900,4700,4300,5100,4600,5500,4900,5900,5300,6500],
+    salesplus:[320,490,410,680,590,860,630,960,840,1100,960,1280,1150,1480,1340,1600,1440,1780,1640,1900,1760,2100,1930,2300,2080,2490,2230,2670,2410,2960],
+    prowarm:[180,210,390,400,410,540,370,540,560,600,640,590,650,540,560,790,660,830,740,980,760,1040,870,1100,960,960,1040,1130,1050,1340]
+  },
+  '7d': {
+    labels:['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'],
+    all:[6100,9800,8200,12300,9700,15200,11390],
+    fitturbo:[2600,4100,3400,5200,4100,6400,4800],
+    nutrirobot:[2100,3300,2800,4200,3300,5100,3870],
+    salesplus:[920,1500,1280,1920,1520,2380,1810],
+    prowarm:[480,900,720,980,780,1320,910]
+  },
+  '90d': {
+    labels:Array.from({length:90},(_,i)=>`D${i+1}`),
+    all:Array.from({length:90},()=>Math.floor(Math.random()*15000+3000)),
+    fitturbo:Array.from({length:90},()=>Math.floor(Math.random()*6500+1200)),
+    nutrirobot:Array.from({length:90},()=>Math.floor(Math.random()*5200+900)),
+    salesplus:Array.from({length:90},()=>Math.floor(Math.random()*2800+400)),
+    prowarm:Array.from({length:90},()=>Math.floor(Math.random()*1600+300))
+  }
+};
+
+const STATE_DATA = {
+  SP:{sales:1234,revenue:32100,clicks:8204,name:'São Paulo'},
+  RJ:{sales:987,revenue:24570,clicks:5987,name:'Rio de Janeiro'},
+  MG:{sales:756,revenue:18900,clicks:4312,name:'Minas Gerais'},
+  BA:{sales:534,revenue:13350,clicks:2810,name:'Bahia'},
+  RS:{sales:423,revenue:10575,clicks:2203,name:'Rio Grande do Sul'},
+  PR:{sales:389,revenue:9725,clicks:2010,name:'Paraná'}
+};
+
+const CITIES_DATA = {
+  SP:[{name:'São Paulo',sales:623,rev:16200},{name:'Campinas',sales:187,rev:4860},{name:'Santos',sales:145,rev:3770}],
+  default:[{name:'Capital',sales:180,rev:4500},{name:'Cidade 2',sales:90,rev:2250},{name:'Cidade 3',sales:60,rev:1500}]
+};
+
+/* ============================================================
+   ALL METRICS DEFINITION
+============================================================ */
+const ALL_METRICS = [
+  { id:'clicks',      label:'Cliques na Página',   color:'ac',   icon:'eye',      type:'number', desc:'Total de cliques nas páginas de pressel' },
+  { id:'starts',      label:'Starts nos Bots',      color:'pur',  icon:'bot',      type:'number', desc:'Usuários que iniciaram conversa no bot' },
+  { id:'pixGen',      label:'PIX Gerados',           color:'warn', icon:'pix',      type:'number', desc:'Total de cobranças PIX criadas' },
+  { id:'revTotal',    label:'Faturamento Total',     color:'ac',   icon:'money',    type:'currency', desc:'Soma de todo faturamento gerado' },
+  { id:'pixPaid',     label:'PIX Pagos',             color:'ok',   icon:'check',    type:'number', desc:'PIX que foram efetivamente pagos' },
+  { id:'revPaid',     label:'Faturamento Pago',      color:'ok',   icon:'wallet',   type:'currency', desc:'Valor efetivamente recebido' },
+  { id:'convFunnel',  label:'Conversão do Funil',    color:'warn', icon:'funnel',   type:'percent', desc:'% de starts que resultaram em vendas' },
+  { id:'convPix',     label:'Conversão do PIX',      color:'ok',   icon:'pix-conv', type:'percent', desc:'% de PIX gerados que foram pagos' },
+  { id:'blocked',     label:'Leads Bloqueados',      color:'err',  icon:'block',    type:'number', desc:'Leads que bloquearam o bot' },
+];
+
+const ICONS = {
+  eye:`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>`,
+  bot:`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>`,
+  pix:`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8H3a2 2 0 00-2 2v6a2 2 0 002 2h2"/></svg>`,
+  money:`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
+  check:`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
+  wallet:`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>`,
+  funnel:`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>`,
+  'pix-conv':`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>`,
+  block:`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>`,
+};
+
+/* ============================================================
+   APP STATE
+============================================================ */
+const state = {
+  gf: { date:'7d', bot:'all' },
+  visual: { period:'day' },
+  enabledMetrics: ['clicks','starts','pixGen','revTotal','pixPaid','revPaid','convFunnel','convPix','blocked'],
+  charts: {},
+  sparklineData: {
+    clicks:  [3100,2800,3700,3200,4100,3500,4600],
+    starts:  [2200,1900,2700,2400,3100,2600,3400],
+    pixGen:  [520,480,610,550,720,630,750],
+    revTotal:[8200,12400,9800,15600,11300,18700,13430],
+    pixPaid: [410,380,510,450,600,510,620],
+    revPaid: [6100,9800,8200,12300,9700,15200,11390],
+    convFunnel:[14.2,13.8,15.1,14.9,16.1,15.5,16.8],
+    convPix:   [79.0,79.2,83.6,81.8,83.3,81.0,82.7],
+    blocked:[64,55,70,58,72,60,78]
+  }
+};
+
+/* ============================================================
+   THEME TOGGLE
+============================================================ */
+function toggleTheme() {
+  const html = document.documentElement;
+  const currentTheme = html.getAttribute('data-theme');
+  const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+  const themeIcon = document.getElementById('theme-icon');
+  
+  html.setAttribute('data-theme', newTheme);
+  themeIcon.className = newTheme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
+  localStorage.setItem('theme', newTheme);
+  
+  // Update charts for theme changes
+  updateRevenueChart();
+  updateVisualChart();
+}
+
+const savedTheme = localStorage.getItem('theme') || 'dark';
+document.documentElement.setAttribute('data-theme', savedTheme);
+document.getElementById('theme-icon').className = savedTheme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
+
+/* ============================================================
+   UTILS
+============================================================ */
+const fmt = (v, type) => {
+  if (type === 'currency') return 'R$ ' + (v >= 1000 ? (v/1000).toFixed(1)+'k' : v.toLocaleString('pt-BR'));
+  if (type === 'percent') return v.toFixed(1) + '%';
+  return v >= 1000 ? (v/1000).toFixed(1)+'k' : v.toLocaleString('pt-BR');
+};
+const colorVar = { ac:'var(--ac)', ok:'var(--ok)', warn:'var(--warn)', pur:'var(--pur)', err:'var(--err)' };
+
+/* ============================================================
+   NAVIGATION
+============================================================ */
+const PAGE_LABELS = {dashboard:'Dashboard',hotbot:'HotBot',pressels:'Pressel Pages',checkouts:'Checkouts',transactions:'Transações',pixels:'Pixels',pixelWarming:'Pixel Warming',settings:'API PIX',integrations:'Integrações'};
+function nav(page) {
+  document.querySelectorAll('.ni').forEach(el => el.classList.toggle('active', el.dataset.page === page));
+  document.getElementById('bc-cur').textContent = PAGE_LABELS[page] || page;
+  document.getElementById('page-dashboard').style.display = page === 'dashboard' ? '' : 'none';
+  document.getElementById('page-placeholder').style.display = page !== 'dashboard' ? '' : 'none';
+  if (page !== 'dashboard') { document.getElementById('ph-title').textContent = PAGE_LABELS[page] || page; }
+}
+
+/* ============================================================
+   GLOBAL FILTER
+============================================================ */
+function setGF(type, val, el) {
+  if (type === 'date') {
+    state.gf.date = val;
+    document.querySelectorAll('.gf-bar > .dp-pills > .dp').forEach(d => d.classList.remove('active'));
+    el.classList.add('active');
+    
+    // Update dashboard metrics
+    renderMetrics();
+    updateRevenueChart();
+    updateVisualChart();
+    renderBotCards();
+    renderTopStates();
+    renderTopCampaigns();
+    renderPositioning();
+    renderDevices();
+  }
+}
+
+function toggleBotDrop(id) {
+  const menu = document.getElementById(id.replace('drop','menu'));
+  const btn = document.getElementById(id.replace('drop','btn'));
+  
+  if (menu.classList.contains('open')) {
+    menu.classList.remove('open');
+    btn.classList.remove('open');
+    return;
+  }
+  
+  const btnRect = btn.getBoundingClientRect();
+  const inner = menu.querySelector('.bot-drop-menu-inner');
+  inner.style.position = 'absolute';
+  inner.style.top = (btnRect.bottom + 4) + 'px';
+  inner.style.left = btnRect.left + 'px';
+  inner.style.width = btnRect.width + 'px';
+  inner.style.transform = 'none';
+  
+  menu.classList.add('open');
+  btn.classList.add('open');
+}
+
+function selectBot(val, scope) {
+  const menu = document.getElementById(scope + '-bot-menu');
+  const label = document.getElementById(scope + '-bot-label');
+  const btn = document.getElementById(scope + '-bot-btn');
+  
+  menu.querySelectorAll('.bot-drop-item').forEach(i => {
+    if (i.dataset.bot === val) {
+      i.style.background = 'var(--ac-dim)';
+      i.style.color = 'var(--ac)';
+    } else {
+      i.style.background = '';
+      i.style.color = '';
+    }
+  });
+  
+  const botNames = { all:'Todos os bots', fitturbo:'FitTurbo', nutrirobot:'NutriRobot', salesplus:'SalesPlus', prowarm:'ProWarm' };
+  
+  state.gf.bot = val;
+  label.textContent = botNames[val];
+  
+  renderMetrics();
+  updateRevenueChart();
+  updateVisualChart();
+  renderBotCards();
+  renderTopStates();
+  renderTopCampaigns();
+  renderPositioning();
+  renderDevices();
+  
+  menu.classList.remove('open');
+  btn.classList.remove('open');
+}
+
+/* ============================================================
+   METRICS RENDER
+============================================================ */
+function renderMetrics() {
+  const grid = document.getElementById('metrics-grid');
+  const bot = state.gf.bot;
+  const date = state.gf.date;
+  const data = MOCK_METRICS[bot] || MOCK_METRICS.all;
+  
+  const dateMultiplier = (date === 'today' || date === 'yesterday') ? 0.3 : (date === '7d' ? 0.8 : (date === 'total' ? 3 : 1));
+  const botMultiplier = bot === 'all' ? 1 : (bot === 'fitturbo' ? 0.8 : bot === 'nutrirobot' ? 0.7 : 0.6);
+  const totalMultiplier = dateMultiplier * botMultiplier;
+  
+  grid.innerHTML = '';
+  state.enabledMetrics.forEach(id => {
+    const m = ALL_METRICS.find(x => x.id === id);
+    if (!m) return;
+    const val = Math.round((data[id] !== undefined ? data[id] : 0) * totalMultiplier);
+    const tr = Math.round((data.trend[id] || 0) * totalMultiplier);
+    const trUp = tr >= 0;
+    const col = m.color;
+    const div = document.createElement('div');
+    div.className = `mc c-${col}`;
+    div.innerHTML = `
+      <div class="mc-head">
+        <div class="mc-ico c-${col}">${ICONS[m.icon]}</div>
+        <div class="mc-trend ${trUp?'up':'down'}">
+          ${trUp?`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>`:`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>`}
+          ${Math.abs(tr)}%
+        </div>
+      </div>
+      <div class="mc-val c-${col}">${fmt(val, m.type)}</div>
+      <div class="mc-lbl">${m.label}</div>
+      <canvas class="mc-spark" id="spark-${id}"></canvas>
+    `;
+    grid.appendChild(div);
+  });
+  
+  setTimeout(() => {
+    initializeDragAndDrop();
+    state.enabledMetrics.forEach(id => {
+      const m = ALL_METRICS.find(x => x.id === id);
+      const sparklineData = generateSparklineData(id, totalMultiplier);
+      if (!sparklineData) return;
+      drawSparkline(`spark-${id}`, sparklineData, colorVar[m.color]);
+    });
+  }, 50);
+}
+
+function generateSparklineData(metricId, multiplier) {
+  const baseData = state.sparklineData[metricId] || [];
+  return baseData.map(val => Math.round(val * multiplier));
+}
+
+function drawSparkline(id, data, color) {
+  const canvas = document.getElementById(id);
+  if (!canvas) return;
+  if (canvas._chartInst) { canvas._chartInst.destroy(); }
+  canvas.width = canvas.offsetWidth || 160;
+  canvas.height = 32;
+  canvas._chartInst = new Chart(canvas, {
+    type:'line',
+    data:{ labels:data.map((_,i)=>i), datasets:[{ data, borderColor:color, borderWidth:2, pointRadius:0, fill:true,
+      backgroundColor:(ctx)=>{ const g=ctx.chart.ctx.createLinearGradient(0,0,0,32); g.addColorStop(0,color+'40'); g.addColorStop(1,color+'00'); return g; },
+      tension:.4 }] },
+    options:{ responsive:false, animation:false, plugins:{legend:{display:false},tooltip:{enabled:false}},
+      scales:{x:{display:false},y:{display:false}}, elements:{point:{radius:0}} }
+  });
+}
+
+function initializeDragAndDrop() {
+  setTimeout(() => {
+    const metricsGrid = document.getElementById('metrics-grid');
+    if (metricsGrid) {
+      new Sortable(metricsGrid, {
+        animation: 150, ghostClass: 'dragging',
+        onEnd: function(evt) { saveMetricsOrder(); }
+      });
+    }
+    const cpList = document.getElementById('cp-list');
+    if (cpList) {
+      new Sortable(cpList, {
+        animation: 150, ghostClass: 'dragging',
+        onEnd: function(evt) { syncMetricsOrder(); }
+      });
+    }
+  }, 100);
+}
+
+function saveMetricsOrder() {
+  const metrics = document.querySelectorAll('.mc');
+  const order = Array.from(metrics).map(card => {
+    const canvas = card.querySelector('.mc-spark');
+    return canvas ? canvas.id.replace('spark-', '') : null;
+  }).filter(id => id);
+  state.enabledMetrics = order;
+}
+
+function syncMetricsOrder() {
+  const panelItems = document.querySelectorAll('#cp-list .cp-item');
+  const newOrder = Array.from(panelItems).map(item => {
+    const checkbox = item.querySelector('input[type="checkbox"]');
+    return checkbox ? checkbox.getAttribute('onchange').match(/'([^']+)'/)[1] : null;
+  }).filter(id => id && state.enabledMetrics.includes(id));
+  
+  state.enabledMetrics = newOrder;
+  renderMetrics();
+  renderCustomizeList();
+}
+
+/* ============================================================
+   REVENUE CHART
+============================================================ */
+function updateRevenueChart() {
+  const date = state.gf.date;
+  const bot = state.gf.bot;
+  
+  // Mapping global date filter to chart logic
+  let dKey = '30d';
+  if (date === '7d' || date === 'today' || date === 'yesterday') dKey = '7d';
+  if (date === 'total') dKey = '90d';
+  
+  const d = CHART_DATA[dKey] || CHART_DATA['30d'];
+  const vals = d[bot] || d.all;
+  
+  if (state.charts.revenue) { state.charts.revenue.destroy(); }
+  const ctx = document.getElementById('revenueChart');
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  
+  state.charts.revenue = new Chart(ctx, {
+    type:'line',
+    data:{ labels:d.labels, datasets:[{
+      label:'Faturamento Pago',
+      data:vals,
+      borderColor: isLight ? '#10b981' : '#34d399',
+      backgroundColor:(ctx)=>{ const g=ctx.chart.ctx.createLinearGradient(0,0,0,200); g.addColorStop(0,'rgba(52,211,153,.22)'); g.addColorStop(1,'rgba(52,211,153,.00)'); return g; },
+      borderWidth:2.5, fill:true, tension:.4, pointRadius:dKey==='90d'?0:4, pointHoverRadius:6,
+      pointBackgroundColor:'#34d399', pointBorderColor: isLight ? '#ffffff' : '#080e1a', pointBorderWidth:2
+    }] },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          backgroundColor: isLight ? '#ffffff' : '#0f1928', 
+          borderColor:'rgba(52,211,153,.25)', borderWidth:1,
+          titleColor: isLight ? '#0f172a' : '#f0f6ff', 
+          bodyColor: isLight ? '#475569' : '#7d9bb5', 
+          padding:10,
+          callbacks:{ label:ctx=>` R$ ${ctx.parsed.y.toLocaleString('pt-BR')}` }
+        }
+      },
+      scales:{
+        x:{ grid:{color:'rgba(56,189,248,.04)',drawBorder:false}, ticks:{color: isLight ? '#64748b' : '#4a6480',font:{family:'Inter',size:10}, maxTicksLimit:dKey==='90d'?10:undefined} },
+        y:{ grid:{color:'rgba(56,189,248,.04)',drawBorder:false}, ticks:{color: isLight ? '#64748b' : '#4a6480',font:{family:'Inter',size:10},callback:v=>'R$'+(v/1000).toFixed(0)+'k'} }
+      }
+    }
+  });
+}
+
+/* ============================================================
+   ADVANCED VISUAL CHART (Múltiplas Linhas)
+============================================================ */
+function setVisualPeriod(period, el) {
+  state.visual.period = period;
+  document.querySelectorAll('.chart-filters .cf-pills .cf-p').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  updateVisualChart();
+}
+
+function updateVisualChart() {
+  const { period } = state.visual;
+  const ctx = document.getElementById('visualChart');
+  
+  if (state.charts.visual) {
+    state.charts.visual.destroy();
+  }
+  
+  let labels;
+  let dataClicks = generateDataForPeriod(period, 'clicks');
+  let dataStarts = generateDataForPeriod(period, 'starts');
+  let dataSales  = generateDataForPeriod(period, 'sales');
+  
+  if (period === 'hour') {
+    labels = Array.from({length: 24}, (_, i) => `${i}:00`);
+  } else if (period === 'day') {
+    labels = ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
+  } else {
+    labels = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  }
+  
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+
+  state.charts.visual = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: 'Cliques',
+          data: dataClicks,
+          borderColor: '#38bdf8', // Azul (var--ac)
+          backgroundColor: ctx => { const g = ctx.chart.ctx.createLinearGradient(0,0,0,280); g.addColorStop(0, '#38bdf860'); g.addColorStop(1, '#38bdf800'); return g; },
+          borderWidth: 2, fill: true, tension: 0.4, pointRadius: 0, pointHoverRadius: 6
+        },
+        {
+          label: 'Starts',
+          data: dataStarts,
+          borderColor: '#a78bfa', // Roxo (var--pur)
+          backgroundColor: ctx => { const g = ctx.chart.ctx.createLinearGradient(0,0,0,280); g.addColorStop(0, '#a78bfa60'); g.addColorStop(1, '#a78bfa00'); return g; },
+          borderWidth: 2, fill: true, tension: 0.4, pointRadius: 0, pointHoverRadius: 6
+        },
+        {
+          label: 'Vendas',
+          data: dataSales,
+          borderColor: '#34d399', // Verde (var--ok)
+          backgroundColor: ctx => { const g = ctx.chart.ctx.createLinearGradient(0,0,0,280); g.addColorStop(0, '#34d39960'); g.addColorStop(1, '#34d39900'); return g; },
+          borderWidth: 2, fill: true, tension: 0.4, pointRadius: 0, pointHoverRadius: 6
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: {
+        mode: 'index',
+        intersect: false
+      },
+      plugins: {
+        legend: {
+          display: true,
+          position: 'top',
+          labels: {
+            color: isLight ? '#475569' : '#7d9bb5',
+            usePointStyle: true,
+            boxWidth: 8,
+            font: { family: 'Inter', size: 11, weight: '600' }
+          }
+        },
+        tooltip: {
+          backgroundColor: isLight ? '#ffffff' : '#0f1928',
+          borderColor: 'rgba(56,189,248,.15)',
+          borderWidth: 1,
+          titleColor: isLight ? '#0f172a' : '#f0f6ff',
+          bodyColor: isLight ? '#475569' : '#7d9bb5',
+          padding: 12,
+          usePointStyle: true,
+          callbacks: {
+            label: function(context) {
+              return ` ${context.dataset.label}: ${context.parsed.y.toLocaleString('pt-BR')}`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { color: isLight ? '#64748b' : '#4a6480', font: { family: 'Inter', size: 10 } }
+        },
+        y: {
+          grid: { color: 'rgba(56,189,248,.04)', drawBorder: false },
+          ticks: {
+            color: isLight ? '#64748b' : '#4a6480', font: { family: 'Inter', size: 10 },
+            callback: value => value >= 1000 ? (value/1000).toFixed(0) + 'k' : value
+          }
+        }
+      }
+    }
+  });
+}
+
+function generateDataForPeriod(period, type) {
+  // Ajusta escalas para ficarem bonitas lado a lado
+  let mult = type === 'clicks' ? 3 : (type === 'starts' ? 2 : 1);
+  let length = period === 'hour' ? 24 : (period === 'day' ? 7 : 12);
+  let base = period === 'hour' ? 50 : (period === 'day' ? 500 : 5000);
+  
+  return Array.from({length}, () => Math.floor(Math.random() * base * mult + base * mult * 0.5));
+}
+
+/* ============================================================
+   TOP CAMPANHAS (ESTILO FACEBOOK ADS)
+============================================================ */
+function setFbTab(tab, el) {
+  document.querySelectorAll('.fb-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  // Re-render data simply for visual feedback
+  renderTopCampaigns();
+}
+
+function renderTopCampaigns() {
+  const date = state.gf.date;
+  const dateMult = (date === 'today' || date === 'yesterday') ? 0.2 : (date === '7d' ? 1 : (date === '30d' ? 4 : 10));
+
+  const campaigns = [
+    { name: '[Lançamento] HotTrack Checkout V2', status: 'active', results: 124 * dateMult, cpa: 45.20, spent: 5604.80 * dateMult, roas: 3.2 },
+    { name: 'Remarketing - Carrinho Abandonado', status: 'active', results: 85 * dateMult, cpa: 22.10, spent: 1878.50 * dateMult, roas: 5.4 },
+    { name: 'Captação Leads - Topo de Funil', status: 'paused', results: 312 * dateMult, cpa: 38.50, spent: 12012.00 * dateMult, roas: 4.1 },
+    { name: 'Engajamento Stories - Base Quente', status: 'active', results: 45 * dateMult, cpa: 89.00, spent: 4005.00 * dateMult, roas: 1.8 }
+  ];
+
+  const tbody = document.getElementById('fb-table-body');
+  if(!tbody) return;
+
+  tbody.innerHTML = campaigns.map(c => `
+    <tr>
+      <td><input type="checkbox" style="cursor:pointer"></td>
+      <td style="font-weight:600; color:var(--ac); cursor:pointer">${c.name}</td>
+      <td>
+        <div class="fb-status ${c.status}">
+          <div class="dot"></div>
+          ${c.status === 'active' ? 'Ativo' : 'Pausado'}
+        </div>
+      </td>
+      <td style="font-weight:600">${Math.round(c.results)}</td>
+      <td>R$ ${c.cpa.toFixed(2).replace('.', ',')}</td>
+      <td>R$ ${c.spent.toFixed(2).replace('.', ',')}</td>
+      <td style="font-weight:700; color:${c.roas >= 3 ? 'var(--ok)' : (c.roas > 2 ? 'var(--warn)' : 'var(--err)')}">
+        ${c.roas.toFixed(2)}x
+      </td>
+    </tr>
+  `).join('');
+}
+
+
+/* ============================================================
+   BOT CARDS, STATES E POSICIONAMENTOS (Adaptados ao novo global)
+============================================================ */
+function renderBotCards() {
+  const container = document.getElementById('bots-container');
+  container.innerHTML = '';
+  BOTS.forEach(bot => {
+    const m = bot.metrics;
+    const card = document.createElement('div');
+    card.className = 'bot-card';
+    card.innerHTML = `
+      <div class="bc-top">
+        <div class="bc-status ${bot.status}"><div class="bc-status-dot"></div>${bot.status === 'ativo' ? 'Ativo' : 'Pausado'}</div>
+        <svg style="width:14px;height:14px;color:var(--tx3);cursor:pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+      </div>
+      <div class="bc-center">
+        <div class="bc-avatar" style="background:${bot.gradient}">${bot.initials}</div>
+        <div>
+          <div class="bc-name">${bot.name}</div>
+          <div class="bc-handle">${bot.handle}</div>
+        </div>
+      </div>
+      <canvas class="bc-chart" id="bc-chart-${bot.id}" height="48"></canvas>
+      <div class="bc-divider"></div>
+      <div class="bc-stats">
+        <div class="bcs-row"><span class="bcs-lbl">Cliques Pressel</span><span class="bcs-val">${fmt(m.clicks,'number')}</span></div>
+        <div class="bcs-row"><span class="bcs-lbl">Starts Totais</span><span class="bcs-val">${fmt(m.starts,'number')}</span></div>
+        <div class="bcs-row"><span class="bcs-lbl">Fat. Pago</span><span class="bcs-val c-ok">${fmt(m.revPaid,'currency')}</span></div>
+        <div class="bcs-row"><span class="bcs-lbl">Conv. PIX</span><span class="bcs-val c-ac">${m.convPix.toFixed(1)}%</span></div>
+        <div class="bcs-row"><span class="bcs-lbl">Conv. Funil</span><span class="bcs-val c-ac">${m.convFunnel.toFixed(1)}%</span></div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+  setTimeout(() => {
+    BOTS.forEach(bot => {
+      const canvas = document.getElementById(`bc-chart-${bot.id}`);
+      if (!canvas) return;
+      canvas.width = 188; canvas.height = 48;
+      if (canvas._chartInst) canvas._chartInst.destroy();
+      const gradient = canvas.getContext('2d').createLinearGradient(0,0,0,48);
+      gradient.addColorStop(0,'rgba(52,211,153,.3)');
+      gradient.addColorStop(1,'rgba(52,211,153,.00)');
+      canvas._chartInst = new Chart(canvas, {
+        type:'bar',
+        data:{ labels:['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'],
+          datasets:[{ data:bot.sparkline, backgroundColor:bot.sparkline.map((_,i)=> i===bot.sparkline.indexOf(Math.max(...bot.sparkline)) ? '#34d399' : 'rgba(52,211,153,.35)'),
+            borderRadius:3, borderSkipped:false }] },
+        options:{ responsive:false, animation:{duration:800}, plugins:{legend:{display:false},tooltip:{enabled:false}},
+          scales:{x:{display:false},y:{display:false}} }
+      });
+    });
+  }, 100);
+}
+
+function renderTopStates() {
+  const date = state.gf.date;
+  const dateMultiplier = (date === 'today' || date === 'yesterday') ? 0.3 : (date === '7d' ? 0.8 : (date === 'total' ? 3 : 1));
+  const states = Object.entries(STATE_DATA).map(([uf, d]) => ({
+    uf, sales: Math.round(d.sales * dateMultiplier), revenue: Math.round(d.revenue * dateMultiplier)
+  })).sort((a,b) => b.sales - a.sales).slice(0, 8);
+  
+  const maxSales = states[0]?.sales || 1;
+  document.getElementById('top-states-list').innerHTML = states.map((s, i) => `
+    <div class="state-rank-item" onclick="openCityModal('${s.uf}')" style="padding:.6rem .75rem;border-radius:8px;margin-bottom:.5rem;background:var(--bg-c);border:1px solid var(--bdr);cursor:pointer;transition:all .15s;">
+      <div class="sri-rank" style="font-size:.8rem">${i+1}</div>
+      <div class="sri-uf" style="font-size:.85rem;font-weight:700">${s.uf}</div>
+      <div class="sri-bar-wrap"><div class="sri-bar" style="height:6px;border-radius:6px;background:linear-gradient(to right,var(--ac),var(--ok));width:${Math.round(s.sales/maxSales*100)}%"></div></div>
+      <div class="sri-val" style="font-size:.78rem;font-weight:700;color:var(--ok)">${s.sales.toLocaleString('pt-BR')}</div>
+    </div>
+  `).join('');
+}
+
+function renderPositioning() {
+  const dateMult = state.gf.date === 'today' ? 0.2 : (state.gf.date === '7d' ? 1 : 4);
+  const positioning = [
+    { name: 'Facebook Stories', sales: 2847 * dateMult, revenue: 142350 * dateMult, icon: 'fab fa-facebook-f', color: '#1877f2,#0c5bd7' },
+    { name: 'Facebook Mobile Feed', sales: 4521 * dateMult, revenue: 227840 * dateMult, icon: 'fab fa-facebook-f', color: '#1877f2,#0c5bd7' },
+    { name: 'Instagram Stories', sales: 3192 * dateMult, revenue: 161230 * dateMult, icon: 'fab fa-instagram', color: '#e4405f,#c13584' },
+    { name: 'Orgânico', sales: 1843 * dateMult, revenue: 89150 * dateMult, icon: 'fas fa-search', color: '#10b981,#059669' }
+  ];
+  
+  const container = document.querySelector('.positioning-grid');
+  if (container) {
+    container.innerHTML = positioning.map(pos => `
+      <div class="pos-item">
+        <div class="pos-icon" style="background:linear-gradient(135deg,${pos.color})"><i class="${pos.icon}"></i></div>
+        <div class="pos-info">
+          <div class="pos-name">${pos.name}</div>
+          <div class="pos-metrics">
+            <div><span class="pos-val">${Math.round(pos.sales).toLocaleString('pt-BR')}</span><span class="pos-label">vendas</span></div>
+            <div><span class="pos-val" style="color:var(--ok)">R$ ${Math.round(pos.revenue).toLocaleString('pt-BR')}</span><span class="pos-label">vendas pagas</span></div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+function renderDevices() {
+  const dateMult = state.gf.date === 'today' ? 0.2 : (state.gf.date === '7d' ? 1 : 4);
+  const devices = [
+    { name: 'Mobile', sales: 18432 * dateMult, revenue: 892160 * dateMult, icon: 'mobile-alt' },
+    { name: 'Desktop', sales: 8721 * dateMult, revenue: 423605 * dateMult, icon: 'desktop' }
+  ];
+  const container = document.querySelector('.devices-grid');
+  if (container) {
+    container.innerHTML = devices.map(d => `
+      <div class="device-item">
+        <div class="device-icon"><i class="fas fa-${d.icon}"></i></div>
+        <div class="device-info">
+          <div class="device-name">${d.name}</div>
+          <div class="device-stats">
+            <div class="device-stat"><span class="ds-val">${Math.round(d.sales).toLocaleString('pt-BR')}</span><span class="ds-label">vendas</span></div>
+            <div class="device-stat"><span class="ds-val" style="color:var(--ok)">R$ ${Math.round(d.revenue).toLocaleString('pt-BR')}</span><span class="ds-label">vendas pagas</span></div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+/* ============================================================
+   CUSTOMIZE PANEL
+============================================================ */
+function toggleCustomize() {
+  const overlay = document.getElementById('cp-overlay');
+  const drawer = document.getElementById('cp-drawer');
+  const isOpen = drawer.classList.contains('open');
+  overlay.classList.toggle('open', !isOpen);
+  drawer.classList.toggle('open', !isOpen);
+  if (!isOpen) renderCustomizeList();
+}
+
+function renderCustomizeList() {
+  const list = document.getElementById('cp-list');
+  list.innerHTML = '';
+  ALL_METRICS.forEach(m => {
+    const enabled = state.enabledMetrics.includes(m.id);
+    const item = document.createElement('div');
+    item.className = 'cp-item' + (enabled ? ' enabled' : '');
+    item.innerHTML = `
+      <div class="cp-drag"><span></span><span></span><span></span></div>
+      <div class="cp-info"><div class="cp-name">${m.label}</div><div class="cp-desc">${m.desc}</div></div>
+      <label class="tog">
+        <input type="checkbox" ${enabled?'checked':''} onchange="toggleMetric('${m.id}',this)">
+        <span class="tog-sl"></span>
+      </label>
+      <div class="cp-arrows">
+        <div class="cp-arr" onclick="moveMetric('${m.id}',-1)">▲</div>
+        <div class="cp-arr" onclick="moveMetric('${m.id}',1)">▼</div>
+      </div>
+    `;
+    list.appendChild(item);
+  });
+}
+
+function toggleMetric(id, checkbox) {
+  if (checkbox.checked) {
+    if (!state.enabledMetrics.includes(id)) state.enabledMetrics.push(id);
+  } else {
+    if (state.enabledMetrics.length > 1) state.enabledMetrics = state.enabledMetrics.filter(x => x !== id);
+    else { checkbox.checked = true; return; }
+  }
+  renderMetrics();
+  renderCustomizeList();
+}
+
+function moveMetric(id, dir) {
+  const i = state.enabledMetrics.indexOf(id);
+  if (i < 0) return;
+  const ni = i + dir;
+  if (ni < 0 || ni >= state.enabledMetrics.length) return;
+  [state.enabledMetrics[i], state.enabledMetrics[ni]] = [state.enabledMetrics[ni], state.enabledMetrics[i]];
+  renderMetrics();
+  renderCustomizeList();
+}
+
+function closeCityModal() { document.getElementById('city-modal').classList.remove('open'); }
+function openCityModal(uf) {
+  const cities = CITIES_DATA[uf] || CITIES_DATA.default;
+  const maxSales = cities[0].sales;
+  document.getElementById('city-modal-title').innerHTML = `Cidades · <span style="color:var(--ac)">${uf}</span>`;
+  document.getElementById('city-modal-list').innerHTML = cities.map((c, i) => `
+    <div class="cm-city">
+      <div class="cm-rank">${i+1}</div>
+      <div class="cm-info">
+        <div class="cm-cname">${c.name}</div>
+        <div class="cm-cbar-wrap"><div class="cm-cbar" style="width:${Math.round(c.sales/maxSales*100)}%"></div></div>
+      </div>
+      <div class="cm-cval">R$ ${c.rev.toLocaleString('pt-BR')}</div>
+    </div>
+  `).join('');
+  document.getElementById('city-modal').classList.add('open');
+}
+
+/* ============================================================
+   INIT
+============================================================ */
+window.addEventListener('load', () => {
+  renderMetrics();
+  updateRevenueChart();
+  updateVisualChart();
+  renderBotCards();
+  renderTopStates();
+  renderTopCampaigns();
+  renderPositioning();
+  renderDevices();
+});
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.bot-drop')) {
+    document.querySelectorAll('.bot-drop-menu').forEach(m => m.classList.remove('open'));
+  }
+});
+</script>
+</body>
+</html>
