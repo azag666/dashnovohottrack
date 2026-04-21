@@ -341,11 +341,11 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .ds-label{font-size:.62rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.3px}
 
 /* ============================================================
-   CITY MODAL
+   MODALS GERAIS (CITY E SETTINGS)
 ============================================================ */
-.city-modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:60;display:none;align-items:center;justify-content:center}
-.city-modal-bg.open{display:flex}
-.city-modal{background:var(--bg-s);border:1px solid var(--bdr-h);border-radius:16px;width:420px;max-width:95vw;padding:1.5rem;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:9999;display:none;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal-box{background:var(--bg-s);border:1px solid var(--bdr-h);border-radius:16px;width:100%;max-width:420px;padding:1.5rem;box-shadow:0 20px 60px rgba(0,0,0,.6)}
 .cm-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem;padding-bottom:.875rem;border-bottom:1px solid var(--bdr)}
 .cm-title{font-size:1rem;font-weight:700;color:var(--tx1)}
 .cm-close{width:30px;height:30px;border-radius:7px;border:1px solid var(--bdr);background:var(--bg-c);color:var(--tx2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s}
@@ -359,6 +359,26 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .cm-cbar-wrap{height:4px;border-radius:4px;background:rgba(56,189,248,.1);margin-top:4px;overflow:hidden}
 .cm-cbar{height:100%;border-radius:4px;background:linear-gradient(to right,var(--ac-dk),var(--ac))}
 .cm-cval{font-size:.78rem;font-weight:700;color:var(--ok)}
+
+/* ============================================================
+   SETTINGS MODAL SPECIFICS
+============================================================ */
+.sm-section { margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--bdr); }
+.sm-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.sm-sec-title { font-size: .85rem; font-weight: 700; color: var(--tx1); margin-bottom: 1.25rem; }
+.sm-profile-flex { display: flex; gap: 1.5rem; align-items: flex-start; }
+.sm-avatar-wrap { display: flex; flex-direction: column; align-items: center; gap: .75rem; }
+.sm-avatar { width: 72px; height: 72px; border-radius: 18px; background: linear-gradient(135deg, #0ea5e9, #7c3aed); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: 700; color: #fff; box-shadow: 0 8px 24px rgba(14,165,233,.25); }
+.sm-btn-small { background: var(--bg-c); border: 1px solid var(--bdr); color: var(--tx2); padding: .4rem .75rem; border-radius: 7px; font-size: .75rem; font-weight: 600; cursor: pointer; transition: all .15s; }
+.sm-btn-small:hover { border-color: var(--bdr-h); color: var(--tx1); background: var(--bg-ch); }
+.sm-input-wrap { flex: 1; display: flex; flex-direction: column; gap: .5rem; }
+.sm-input-wrap label { font-size: .7rem; font-weight: 600; color: var(--tx3); text-transform: uppercase; letter-spacing: .5px; }
+.sm-input { width: 100%; background: var(--bg-c); border: 1px solid var(--bdr); border-radius: 8px; padding: .75rem; color: var(--tx1); font-size: .85rem; font-family: 'Inter', sans-serif; transition: all .15s; outline: none; }
+.sm-input:focus { border-color: var(--ac); box-shadow: 0 0 0 3px var(--ac-dim); }
+.sm-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+.sm-data-card { background: var(--bg-c); border: 1px solid var(--bdr); padding: 1.1rem; border-radius: 10px; display: flex; flex-direction: column; gap: .4rem; }
+.sm-lbl { font-size: .65rem; color: var(--tx3); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
+.sm-val { font-size: 1.15rem; font-weight: 800; color: var(--tx1); }
 
 .mockup-tag{position:fixed;bottom:.875rem;right:.875rem;background:linear-gradient(135deg,#0ea5e9,#7c3aed);color:#fff;font-size:.65rem;font-weight:700;padding:4px 10px;border-radius:20px;z-index:200;letter-spacing:.5px;box-shadow:0 4px 12px rgba(14,165,233,.4)}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
@@ -417,7 +437,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
     </div>
   </nav>
   <div class="s-foot">
-    <div class="u-card">
+    <div class="u-card" onclick="openSettingsModal()">
       <div class="u-av">RR</div>
       <div style="flex:1;min-width:0">
         <div class="u-nm">Rubens Neto</div>
@@ -465,7 +485,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
       <button class="ib" title="Notificações">
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
       </button>
-      <button class="ib" title="Configurações">
+      <button class="ib" title="Configurações" onclick="openSettingsModal()">
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
       </button>
     </div>
@@ -635,8 +655,8 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   <div class="cp-list" id="cp-list"></div>
 </div>
 
-<div class="city-modal-bg" id="city-modal">
-  <div class="city-modal">
+<div class="modal-bg" id="city-modal">
+  <div class="modal-box" style="max-width:420px">
     <div class="cm-head">
       <span class="cm-title" id="city-modal-title">Cidades</span>
       <div class="cm-close" onclick="closeCityModal()">
@@ -644,6 +664,59 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
       </div>
     </div>
     <div class="cm-list" id="city-modal-list"></div>
+  </div>
+</div>
+
+<div class="modal-bg" id="settings-modal">
+  <div class="modal-box" style="max-width:540px">
+    <div class="cm-head">
+      <span class="cm-title">Configurações da Conta</span>
+      <div class="cm-close" onclick="closeSettingsModal()">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      </div>
+    </div>
+    
+    <div class="sm-body">
+      <div class="sm-section">
+        <div class="sm-sec-title">Perfil do Usuário</div>
+        <div class="sm-profile-flex">
+          <div class="sm-avatar-wrap">
+            <div class="sm-avatar">RR</div>
+            <button class="sm-btn-small">Alterar Foto</button>
+          </div>
+          <div class="sm-input-wrap">
+            <label>Nome de Exibição</label>
+            <input type="text" class="sm-input" value="Rubens Reinaldo Rathmann Neto">
+          </div>
+        </div>
+      </div>
+      
+      <div class="sm-section">
+        <div class="sm-sec-title">Dados da Conta & Plano</div>
+        <div class="sm-grid">
+          <div class="sm-data-card">
+            <span class="sm-lbl">Plano Atual</span>
+            <span class="sm-val" style="color:var(--ac)">Plano Pro</span>
+          </div>
+          <div class="sm-data-card">
+            <span class="sm-lbl">Taxa HotTrack</span>
+            <span class="sm-val" style="color:var(--warn)">2.99%</span>
+          </div>
+          <div class="sm-data-card">
+            <span class="sm-lbl">Saques Mensais</span>
+            <span class="sm-val">Ilimitados</span>
+          </div>
+          <div class="sm-data-card">
+            <span class="sm-lbl">Membros Ativos</span>
+            <span class="sm-val">4 Parceiros</span>
+          </div>
+        </div>
+      </div>
+      
+      <div style="display:flex; justify-content:flex-end; margin-top:1rem;">
+         <button class="btn btn-pr" onclick="closeSettingsModal()">Salvar Alterações</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -843,6 +916,35 @@ function nav(page) {
 }
 
 /* ============================================================
+   MODALS
+============================================================ */
+function openSettingsModal() {
+  document.getElementById('settings-modal').classList.add('open');
+}
+function closeSettingsModal() {
+  document.getElementById('settings-modal').classList.remove('open');
+}
+function closeCityModal() {
+  document.getElementById('city-modal').classList.remove('open');
+}
+function openCityModal(uf) {
+  const cities = CITIES_DATA[uf] || CITIES_DATA.default;
+  const maxSales = cities[0].sales;
+  document.getElementById('city-modal-title').innerHTML = `Cidades · <span style="color:var(--ac)">${uf}</span>`;
+  document.getElementById('city-modal-list').innerHTML = cities.map((c, i) => `
+    <div class="cm-city">
+      <div class="cm-rank">${i+1}</div>
+      <div class="cm-info">
+        <div class="cm-cname">${c.name}</div>
+        <div class="cm-cbar-wrap"><div class="cm-cbar" style="width:${Math.round(c.sales/maxSales*100)}%"></div></div>
+      </div>
+      <div class="cm-cval">R$ ${c.rev.toLocaleString('pt-BR')}</div>
+    </div>
+  `).join('');
+  document.getElementById('city-modal').classList.add('open');
+}
+
+/* ============================================================
    GLOBAL FILTER & TOP BAR RENDERING
 ============================================================ */
 function renderTopBar() {
@@ -853,11 +955,8 @@ function renderTopBar() {
   
   document.getElementById('greeting-text').textContent = `${greeting}, Rubens Neto 👋`;
   
-  // Valor de Faturamento TOTAL da conta (ignora filtro de data)
   let val = 1248430.50; 
   
-  // Opcional: mantive a variação apenas para os bots. Se você filtrar um bot, o total mostrado é o total histórico DAQUELE bot.
-  // Como você pediu "não deve mudar com os filtros", mas geralmente o filtro de bot se aplica, mantive a lógica de bot.
   const bot = state.gf.bot;
   if(bot === 'fitturbo') val *= 0.8;
   if(bot === 'nutrirobot') val *= 0.7;
@@ -866,7 +965,6 @@ function renderTopBar() {
   
   document.getElementById('top-revenue-val').textContent = 'R$ ' + val.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
   
-  // Progress Bar Dinâmica e Sofisticada
   const tiers = [0, 10000, 50000, 100000, 250000, 500000, 1000000];
   let percent = 0;
   let activeIndex = 0;
@@ -907,7 +1005,6 @@ function setGF(type, val, el) {
     document.querySelectorAll('.gf-bar > .dp-pills > .dp').forEach(d => d.classList.remove('active'));
     el.classList.add('active');
     
-    // Renderiza tudo, mas a TopBar não muda o Faturamento por conta do valor fixo.
     renderTopBar(); 
     renderMetrics();
     updateRevenueChart();
@@ -1396,7 +1493,7 @@ function renderDevices() {
 }
 
 /* ============================================================
-   CUSTOMIZE PANEL E CITY MODAL
+   CUSTOMIZE PANEL
 ============================================================ */
 function toggleCustomize() {
   const overlay = document.getElementById('cp-overlay');
@@ -1449,24 +1546,6 @@ function moveMetric(id, dir) {
   [state.enabledMetrics[i], state.enabledMetrics[ni]] = [state.enabledMetrics[ni], state.enabledMetrics[i]];
   renderMetrics();
   renderCustomizeList();
-}
-
-function closeCityModal() { document.getElementById('city-modal').classList.remove('open'); }
-function openCityModal(uf) {
-  const cities = CITIES_DATA[uf] || CITIES_DATA.default;
-  const maxSales = cities[0].sales;
-  document.getElementById('city-modal-title').innerHTML = `Cidades · <span style="color:var(--ac)">${uf}</span>`;
-  document.getElementById('city-modal-list').innerHTML = cities.map((c, i) => `
-    <div class="cm-city">
-      <div class="cm-rank">${i+1}</div>
-      <div class="cm-info">
-        <div class="cm-cname">${c.name}</div>
-        <div class="cm-cbar-wrap"><div class="cm-cbar" style="width:${Math.round(c.sales/maxSales*100)}%"></div></div>
-      </div>
-      <div class="cm-cval">R$ ${c.rev.toLocaleString('pt-BR')}</div>
-    </div>
-  `).join('');
-  document.getElementById('city-modal').classList.add('open');
 }
 
 /* ============================================================
