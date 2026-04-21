@@ -129,26 +129,32 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 /* ============================================================
    GLOBAL FILTER BAR
 ============================================================ */
-.gf-bar{display:flex;align-items:center;gap:.75rem;margin-bottom:1.4rem;flex-wrap:wrap}
+.gf-bar{display:flex;align-items:center;gap:.75rem;margin-bottom:1.4rem;flex-wrap:wrap;position:relative;z-index:50}
 .dp-pills{display:flex;gap:3px;background:var(--bg-c);border:1px solid var(--bdr);padding:3px;border-radius:9px}
 .dp{padding:.35rem .8rem;border-radius:6px;font-size:.75rem;font-weight:500;color:var(--tx2);cursor:pointer;transition:all .15s;white-space:nowrap;border:1px solid transparent}
 .dp:hover{color:var(--tx1)}
 .dp.active{background:linear-gradient(135deg,rgba(14,165,233,.2),rgba(124,58,237,.12));color:var(--ac);font-weight:600;border-color:rgba(56,189,248,.22)}
 
 /* ============================================================
-   DROPDOWNS
+   DROPDOWNS (SIMPLIFICADO E CORRIGIDO)
 ============================================================ */
-.bot-drop{position:relative;z-index:9999999}
-.bot-drop-btn{display:flex;align-items:center;gap:.5rem;font-size:.76rem;font-weight:600;color:var(--tx1);padding:.4rem .7rem;border:1px solid var(--bdr);border-radius:8px;background:var(--bg-c);cursor:pointer;transition:all .15s;position:relative;z-index:9999999}
+.bot-drop{position:relative;}
+.bot-drop-btn{display:flex;align-items:center;gap:.5rem;font-size:.76rem;font-weight:600;color:var(--tx1);padding:.4rem .7rem;border:1px solid var(--bdr);border-radius:8px;background:var(--bg-c);cursor:pointer;transition:all .15s;}
 .bot-drop-btn:hover{border-color:var(--bdr-h);background:var(--bg-ch)}
 .bot-drop-btn.open{border-color:var(--ac);background:var(--ac-dim)}
-.bot-drop-menu{position:fixed;top:0;left:0;right:0;background:transparent;z-index:99999999;opacity:0;visibility:hidden;transition:all .15s;padding:20px;box-sizing:border-box}
-.bot-drop-menu.open{opacity:1;visibility:visible}
-.bot-drop-menu-inner{background:var(--bg-s);border:1px solid var(--bdr);border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,.4);max-width:300px;margin:0 auto}
-.bot-drop-item{display:flex;align-items:center;gap:.6rem;padding:.5rem .7rem;font-size:.76rem;color:var(--tx1);cursor:pointer;transition:background .12s}
+.bot-drop-menu{
+  position:absolute; top:calc(100% + 6px); left:0; min-width:200px;
+  background:var(--bg-s); border:1px solid var(--bdr); border-radius:8px;
+  box-shadow:0 8px 32px rgba(0,0,0,.4); z-index:100;
+  opacity:0; visibility:hidden; transform:translateY(-10px); transition:all .2s ease;
+  padding:0.5rem;
+}
+.bot-drop-menu.open{opacity:1; visibility:visible; transform:translateY(0);}
+.bot-drop-item{
+  display:flex; align-items:center; gap:.6rem; padding:.6rem .75rem;
+  font-size:.76rem; color:var(--tx1); cursor:pointer; border-radius:6px; transition:background .12s;
+}
 .bot-drop-item:hover{background:var(--bg-ch)}
-.bot-drop-item:first-child{border-radius:8px 8px 0 0}
-.bot-drop-item:last-child{border-radius:0 0 8px 8px}
 
 /* ============================================================
    METRICS
@@ -236,7 +242,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .chart-body{padding:1.25rem;position:relative;height:250px}
 
 /* ============================================================
-   FB ADS MANAGER STYLE TABS & TABLE
+   FB ADS MANAGER STYLE TABS & TABLE (SIMPLIFICADO UTM)
 ============================================================ */
 .fb-tabs { display:flex; gap:1rem; border-bottom:1px solid var(--bdr); padding:0 1.25rem; margin-bottom:1rem; }
 .fb-tab { padding:.75rem 0; font-size:.78rem; font-weight:600; color:var(--tx2); cursor:pointer; position:relative; transition: color .2s;}
@@ -248,9 +254,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .fb-table th { padding:.5rem; color:var(--tx3); font-weight:600; border-bottom:1px solid var(--bdr); }
 .fb-table td { padding:.75rem .5rem; color:var(--tx1); border-bottom:1px solid rgba(56,189,248,.05); }
 .fb-table tr:hover td { background:var(--bg-ch); }
-.fb-status { display:inline-flex; align-items:center; gap:6px; font-weight:500;}
-.fb-status.active .dot { width:8px; height:8px; background:var(--ok); border-radius:50%; box-shadow: 0 0 4px var(--ok);}
-.fb-status.paused .dot { width:8px; height:8px; background:var(--tx3); border-radius:50%; }
 
 /* ============================================================
    BOT CARDS
@@ -323,6 +326,26 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .device-stat{display:flex;flex-direction:column;align-items:center}
 .ds-val{font-size:.88rem;font-weight:700;color:var(--ac)}
 .ds-label{font-size:.62rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.3px}
+
+/* ============================================================
+   CITY MODAL (CORRIGIDO: CSS RESTAURADO)
+============================================================ */
+.city-modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:60;display:none;align-items:center;justify-content:center}
+.city-modal-bg.open{display:flex}
+.city-modal{background:var(--bg-s);border:1px solid var(--bdr-h);border-radius:16px;width:420px;max-width:95vw;padding:1.5rem;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.cm-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem;padding-bottom:.875rem;border-bottom:1px solid var(--bdr)}
+.cm-title{font-size:1rem;font-weight:700;color:var(--tx1)}
+.cm-close{width:30px;height:30px;border-radius:7px;border:1px solid var(--bdr);background:var(--bg-c);color:var(--tx2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s}
+.cm-close:hover{border-color:var(--bdr-h);color:var(--tx1)}
+.cm-close svg{width:14px;height:14px}
+.cm-list{display:flex;flex-direction:column;gap:.5rem;max-height:360px;overflow-y:auto}
+.cm-city{display:flex;align-items:center;gap:.75rem;padding:.65rem .75rem;background:var(--bg-c);border:1px solid var(--bdr);border-radius:9px}
+.cm-rank{font-size:.75rem;font-weight:700;color:var(--tx3);width:18px;text-align:center}
+.cm-info{flex:1}
+.cm-cname{font-size:.82rem;font-weight:600;color:var(--tx1)}
+.cm-cbar-wrap{height:4px;border-radius:4px;background:rgba(56,189,248,.1);margin-top:4px;overflow:hidden}
+.cm-cbar{height:100%;border-radius:4px;background:linear-gradient(to right,var(--ac-dk),var(--ac))}
+.cm-cval{font-size:.78rem;font-weight:700;color:var(--ok)}
 
 .mockup-tag{position:fixed;bottom:.875rem;right:.875rem;background:linear-gradient(135deg,#0ea5e9,#7c3aed);color:#fff;font-size:.65rem;font-weight:700;padding:4px 10px;border-radius:20px;z-index:200;letter-spacing:.5px;box-shadow:0 4px 12px rgba(14,165,233,.4)}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
@@ -432,6 +455,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
         <div class="dp" onclick="setGF('date','30d',this)">30 dias</div>
         <div class="dp" onclick="setGF('date','total',this)">Total</div>
       </div>
+      
       <div class="bot-drop" id="gf-bot-drop">
         <div class="bot-drop-btn" id="gf-bot-btn" onclick="toggleBotDrop('gf-bot-drop')">
           <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
@@ -439,13 +463,11 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
           <svg class="arr" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="width:12px;height:12px"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
         </div>
         <div class="bot-drop-menu" id="gf-bot-menu">
-          <div class="bot-drop-menu-inner">
-            <div class="bot-drop-item" data-bot="all" onclick="selectBot('all','gf')" style="background:var(--ac-dim);color:var(--ac);">Todos os bots</div>
-            <div class="bot-drop-item" data-bot="fitturbo" onclick="selectBot('fitturbo','gf')">FitTurbo</div>
-            <div class="bot-drop-item" data-bot="nutrirobot" onclick="selectBot('nutrirobot','gf')">NutriRobot</div>
-            <div class="bot-drop-item" data-bot="salesplus" onclick="selectBot('salesplus','gf')">SalesPlus</div>
-            <div class="bot-drop-item" data-bot="prowarm" onclick="selectBot('prowarm','gf')">ProWarm</div>
-          </div>
+          <div class="bot-drop-item" data-bot="all" onclick="selectBot('all','gf')" style="background:var(--ac-dim);color:var(--ac);">Todos os bots</div>
+          <div class="bot-drop-item" data-bot="fitturbo" onclick="selectBot('fitturbo','gf')">FitTurbo</div>
+          <div class="bot-drop-item" data-bot="nutrirobot" onclick="selectBot('nutrirobot','gf')">NutriRobot</div>
+          <div class="bot-drop-item" data-bot="salesplus" onclick="selectBot('salesplus','gf')">SalesPlus</div>
+          <div class="bot-drop-item" data-bot="prowarm" onclick="selectBot('prowarm','gf')">ProWarm</div>
         </div>
       </div>
     </div>
@@ -505,7 +527,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
       <div class="chart-hd" style="padding-bottom:0; border-bottom:none;">
         <div class="chart-hd-left" style="padding:1rem 1.25rem 0;">
           <div class="ch-title">Gestão de Tráfego</div>
-          <div class="ch-sub">Sincronizado com o filtro inicial</div>
+          <div class="ch-sub">Análise baseada em UTMs registradas no servidor</div>
         </div>
       </div>
       <div class="fb-tabs">
@@ -518,12 +540,9 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
           <thead>
             <tr>
               <th style="width:30px"><input type="checkbox" style="cursor:pointer"></th>
-              <th>Nome da Campanha</th>
-              <th>Status</th>
-              <th>Resultados (Vendas)</th>
-              <th>Custo por resultado</th>
-              <th>Valor gasto</th>
-              <th>ROAS</th>
+              <th id="th-nome-utm">Nome da Campanha</th>
+              <th>Vendas</th>
+              <th>Faturamento</th>
             </tr>
           </thead>
           <tbody id="fb-table-body">
@@ -688,6 +707,27 @@ const CITIES_DATA = {
   default:[{name:'Capital',sales:180,rev:4500},{name:'Cidade 2',sales:90,rev:2250},{name:'Cidade 3',sales:60,rev:1500}]
 };
 
+const TRAFFIC_MOCK = {
+  campaigns: [
+    { name: '[Lançamento] HotTrack Checkout V2', sales: 124, revenue: 5604.80 },
+    { name: 'Remarketing - Carrinho Abandonado', sales: 85, revenue: 1878.50 },
+    { name: 'Captação Leads - Topo de Funil', sales: 312, revenue: 12012.00 },
+    { name: 'Engajamento Stories - Base Quente', sales: 45, revenue: 4005.00 }
+  ],
+  adsets: [
+    { name: 'Público Quente - Instagram 30d', sales: 80, revenue: 3400.00 },
+    { name: 'Lookalike 1% - Compradores VIP', sales: 140, revenue: 5200.00 },
+    { name: 'Interesse: Emagrecimento e Saúde', sales: 190, revenue: 8400.00 },
+    { name: 'Retargeting Pageviews', sales: 65, revenue: 2150.00 }
+  ],
+  ads: [
+    { name: 'Vídeo 01 - Prova Social Maria', sales: 150, revenue: 6500.00 },
+    { name: 'Imagem 03 - Desconto Exclusivo', sales: 90, revenue: 3200.00 },
+    { name: 'Carrossel Benefícios do Produto', sales: 60, revenue: 2100.00 },
+    { name: 'Reels Orgânico Impulsionado', sales: 42, revenue: 1850.00 }
+  ]
+};
+
 /* ============================================================
    ALL METRICS DEFINITION
 ============================================================ */
@@ -721,6 +761,7 @@ const ICONS = {
 const state = {
   gf: { date:'7d', bot:'all' },
   visual: { period:'day' },
+  fbTab: 'campaigns',
   enabledMetrics: ['clicks','starts','pixGen','revTotal','pixPaid','revPaid','convFunnel','convPix','blocked'],
   charts: {},
   sparklineData: {
@@ -749,7 +790,6 @@ function toggleTheme() {
   themeIcon.className = newTheme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
   localStorage.setItem('theme', newTheme);
   
-  // Update charts for theme changes
   updateRevenueChart();
   updateVisualChart();
 }
@@ -781,7 +821,7 @@ function nav(page) {
 }
 
 /* ============================================================
-   GLOBAL FILTER
+   GLOBAL FILTER & DROPDOWN (CORRIGIDO)
 ============================================================ */
 function setGF(type, val, el) {
   if (type === 'date') {
@@ -789,13 +829,12 @@ function setGF(type, val, el) {
     document.querySelectorAll('.gf-bar > .dp-pills > .dp').forEach(d => d.classList.remove('active'));
     el.classList.add('active');
     
-    // Update dashboard metrics
     renderMetrics();
     updateRevenueChart();
     updateVisualChart();
     renderBotCards();
     renderTopStates();
-    renderTopCampaigns();
+    renderTrafficTable();
     renderPositioning();
     renderDevices();
   }
@@ -804,23 +843,8 @@ function setGF(type, val, el) {
 function toggleBotDrop(id) {
   const menu = document.getElementById(id.replace('drop','menu'));
   const btn = document.getElementById(id.replace('drop','btn'));
-  
-  if (menu.classList.contains('open')) {
-    menu.classList.remove('open');
-    btn.classList.remove('open');
-    return;
-  }
-  
-  const btnRect = btn.getBoundingClientRect();
-  const inner = menu.querySelector('.bot-drop-menu-inner');
-  inner.style.position = 'absolute';
-  inner.style.top = (btnRect.bottom + 4) + 'px';
-  inner.style.left = btnRect.left + 'px';
-  inner.style.width = btnRect.width + 'px';
-  inner.style.transform = 'none';
-  
-  menu.classList.add('open');
-  btn.classList.add('open');
+  menu.classList.toggle('open');
+  btn.classList.toggle('open');
 }
 
 function selectBot(val, scope) {
@@ -848,7 +872,7 @@ function selectBot(val, scope) {
   updateVisualChart();
   renderBotCards();
   renderTopStates();
-  renderTopCampaigns();
+  renderTrafficTable();
   renderPositioning();
   renderDevices();
   
@@ -973,7 +997,6 @@ function updateRevenueChart() {
   const date = state.gf.date;
   const bot = state.gf.bot;
   
-  // Mapping global date filter to chart logic
   let dKey = '30d';
   if (date === '7d' || date === 'today' || date === 'yesterday') dKey = '7d';
   if (date === 'total') dKey = '90d';
@@ -1058,21 +1081,21 @@ function updateVisualChart() {
         {
           label: 'Cliques',
           data: dataClicks,
-          borderColor: '#38bdf8', // Azul (var--ac)
+          borderColor: '#38bdf8', 
           backgroundColor: ctx => { const g = ctx.chart.ctx.createLinearGradient(0,0,0,280); g.addColorStop(0, '#38bdf860'); g.addColorStop(1, '#38bdf800'); return g; },
           borderWidth: 2, fill: true, tension: 0.4, pointRadius: 0, pointHoverRadius: 6
         },
         {
           label: 'Starts',
           data: dataStarts,
-          borderColor: '#a78bfa', // Roxo (var--pur)
+          borderColor: '#a78bfa', 
           backgroundColor: ctx => { const g = ctx.chart.ctx.createLinearGradient(0,0,0,280); g.addColorStop(0, '#a78bfa60'); g.addColorStop(1, '#a78bfa00'); return g; },
           borderWidth: 2, fill: true, tension: 0.4, pointRadius: 0, pointHoverRadius: 6
         },
         {
           label: 'Vendas',
           data: dataSales,
-          borderColor: '#34d399', // Verde (var--ok)
+          borderColor: '#34d399', 
           backgroundColor: ctx => { const g = ctx.chart.ctx.createLinearGradient(0,0,0,280); g.addColorStop(0, '#34d39960'); g.addColorStop(1, '#34d39900'); return g; },
           borderWidth: 2, fill: true, tension: 0.4, pointRadius: 0, pointHoverRadius: 6
         }
@@ -1129,61 +1152,49 @@ function updateVisualChart() {
 }
 
 function generateDataForPeriod(period, type) {
-  // Ajusta escalas para ficarem bonitas lado a lado
   let mult = type === 'clicks' ? 3 : (type === 'starts' ? 2 : 1);
   let length = period === 'hour' ? 24 : (period === 'day' ? 7 : 12);
   let base = period === 'hour' ? 50 : (period === 'day' ? 500 : 5000);
-  
   return Array.from({length}, () => Math.floor(Math.random() * base * mult + base * mult * 0.5));
 }
 
 /* ============================================================
-   TOP CAMPANHAS (ESTILO FACEBOOK ADS)
+   GESTÃO DE TRÁFEGO (UTMs)
 ============================================================ */
 function setFbTab(tab, el) {
   document.querySelectorAll('.fb-tab').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
-  // Re-render data simply for visual feedback
-  renderTopCampaigns();
+  state.fbTab = tab;
+  
+  const th = document.getElementById('th-nome-utm');
+  if(tab === 'campaigns') th.textContent = 'Nome da Campanha';
+  if(tab === 'adsets') th.textContent = 'Nome do Conjunto';
+  if(tab === 'ads') th.textContent = 'Nome do Anúncio';
+  
+  renderTrafficTable();
 }
 
-function renderTopCampaigns() {
+function renderTrafficTable() {
   const date = state.gf.date;
   const dateMult = (date === 'today' || date === 'yesterday') ? 0.2 : (date === '7d' ? 1 : (date === '30d' ? 4 : 10));
-
-  const campaigns = [
-    { name: '[Lançamento] HotTrack Checkout V2', status: 'active', results: 124 * dateMult, cpa: 45.20, spent: 5604.80 * dateMult, roas: 3.2 },
-    { name: 'Remarketing - Carrinho Abandonado', status: 'active', results: 85 * dateMult, cpa: 22.10, spent: 1878.50 * dateMult, roas: 5.4 },
-    { name: 'Captação Leads - Topo de Funil', status: 'paused', results: 312 * dateMult, cpa: 38.50, spent: 12012.00 * dateMult, roas: 4.1 },
-    { name: 'Engajamento Stories - Base Quente', status: 'active', results: 45 * dateMult, cpa: 89.00, spent: 4005.00 * dateMult, roas: 1.8 }
-  ];
+  const dataList = TRAFFIC_MOCK[state.fbTab] || [];
 
   const tbody = document.getElementById('fb-table-body');
   if(!tbody) return;
 
-  tbody.innerHTML = campaigns.map(c => `
+  tbody.innerHTML = dataList.map(item => `
     <tr>
       <td><input type="checkbox" style="cursor:pointer"></td>
-      <td style="font-weight:600; color:var(--ac); cursor:pointer">${c.name}</td>
-      <td>
-        <div class="fb-status ${c.status}">
-          <div class="dot"></div>
-          ${c.status === 'active' ? 'Ativo' : 'Pausado'}
-        </div>
-      </td>
-      <td style="font-weight:600">${Math.round(c.results)}</td>
-      <td>R$ ${c.cpa.toFixed(2).replace('.', ',')}</td>
-      <td>R$ ${c.spent.toFixed(2).replace('.', ',')}</td>
-      <td style="font-weight:700; color:${c.roas >= 3 ? 'var(--ok)' : (c.roas > 2 ? 'var(--warn)' : 'var(--err)')}">
-        ${c.roas.toFixed(2)}x
-      </td>
+      <td style="font-weight:600; color:var(--tx1);">${item.name}</td>
+      <td style="font-weight:600">${Math.round(item.sales * dateMult)}</td>
+      <td style="color:var(--ok); font-weight:600;">R$ ${(item.revenue * dateMult).toFixed(2).replace('.', ',')}</td>
     </tr>
   `).join('');
 }
 
 
 /* ============================================================
-   BOT CARDS, STATES E POSICIONAMENTOS (Adaptados ao novo global)
+   BOT CARDS, STATES E POSICIONAMENTOS
 ============================================================ */
 function renderBotCards() {
   const container = document.getElementById('bots-container');
@@ -1246,11 +1257,11 @@ function renderTopStates() {
   
   const maxSales = states[0]?.sales || 1;
   document.getElementById('top-states-list').innerHTML = states.map((s, i) => `
-    <div class="state-rank-item" onclick="openCityModal('${s.uf}')" style="padding:.6rem .75rem;border-radius:8px;margin-bottom:.5rem;background:var(--bg-c);border:1px solid var(--bdr);cursor:pointer;transition:all .15s;">
-      <div class="sri-rank" style="font-size:.8rem">${i+1}</div>
-      <div class="sri-uf" style="font-size:.85rem;font-weight:700">${s.uf}</div>
-      <div class="sri-bar-wrap"><div class="sri-bar" style="height:6px;border-radius:6px;background:linear-gradient(to right,var(--ac),var(--ok));width:${Math.round(s.sales/maxSales*100)}%"></div></div>
-      <div class="sri-val" style="font-size:.78rem;font-weight:700;color:var(--ok)">${s.sales.toLocaleString('pt-BR')}</div>
+    <div class="state-rank-item" onclick="openCityModal('${s.uf}')">
+      <div class="sri-rank">${i+1}</div>
+      <div class="sri-uf">${s.uf}</div>
+      <div class="sri-bar-wrap"><div class="sri-bar" style="width:${Math.round(s.sales/maxSales*100)}%"></div></div>
+      <div class="sri-val">${s.sales.toLocaleString('pt-BR')}</div>
     </div>
   `).join('');
 }
@@ -1305,7 +1316,7 @@ function renderDevices() {
 }
 
 /* ============================================================
-   CUSTOMIZE PANEL
+   CUSTOMIZE PANEL E CITY MODAL
 ============================================================ */
 function toggleCustomize() {
   const overlay = document.getElementById('cp-overlay');
@@ -1379,7 +1390,7 @@ function openCityModal(uf) {
 }
 
 /* ============================================================
-   INIT
+   INIT E EVENTOS GLOBAIS
 ============================================================ */
 window.addEventListener('load', () => {
   renderMetrics();
@@ -1387,7 +1398,7 @@ window.addEventListener('load', () => {
   updateVisualChart();
   renderBotCards();
   renderTopStates();
-  renderTopCampaigns();
+  renderTrafficTable();
   renderPositioning();
   renderDevices();
 });
@@ -1395,6 +1406,7 @@ window.addEventListener('load', () => {
 document.addEventListener('click', e => {
   if (!e.target.closest('.bot-drop')) {
     document.querySelectorAll('.bot-drop-menu').forEach(m => m.classList.remove('open'));
+    document.querySelectorAll('.bot-drop-btn').forEach(b => b.classList.remove('open'));
   }
 });
 </script>
